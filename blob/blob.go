@@ -19,6 +19,7 @@ type Blobie struct {
 	Area                                float64
 	IsExists                            bool
 	IsStillBeingTracked                 bool
+	Counted                             bool
 	NumOfConsecutiveFramesWithoutAMatch int
 }
 
@@ -41,6 +42,7 @@ func NewBlobieFromRect(rect *image.Rectangle) *Blobie {
 		Diagonal:            math.Sqrt(math.Pow(float64(rectWidth), 2) + math.Pow(float64(rectHeight), 2)),
 		AspectRatio:         float64(rectWidth) / float64(rectHeight),
 		IsStillBeingTracked: true,
+		Counted:             false,
 		IsExists:            true,
 		NumOfConsecutiveFramesWithoutAMatch: 0,
 	}
@@ -57,17 +59,19 @@ func NewBlobieFromContour(contour *[]image.Point) *Blobie {
 
 // IsCrossedTheLine - check if blob crossed the line
 func (b *Blobie) IsCrossedTheLine(horizontal int, counter *int, direction bool) bool {
-	if (*b).IsStillBeingTracked == true && len((*b).Track) >= 2 {
+	if (*b).IsStillBeingTracked == true && len((*b).Track) >= 2 && (*b).Counted == false {
 		prevFrame := len((*b).Track) - 2
 		currFrame := len((*b).Track) - 1
 		if direction {
 			if (*b).Track[prevFrame].Y <= horizontal && (*b).Track[currFrame].Y > horizontal { // TO us
 				*counter++
+				b.AsCounted()
 				return true
 			}
 		} else {
 			if (*b).Track[prevFrame].Y > horizontal && (*b).Track[currFrame].Y <= horizontal { // FROM us
 				*counter++
+				b.AsCounted()
 				return true
 			}
 		}
@@ -85,6 +89,16 @@ func (b *Blobie) DrawTrack(mat *gocv.Mat, id string) {
 		pt := image.Pt((*b).CurrentRect.Min.X, (*b).CurrentRect.Min.Y)
 		gocv.PutText(mat, "Object ID: "+id, pt, gocv.FontHersheyPlain, 1.2, color.RGBA{0, 255, 0, 0}, 2)
 	}
+}
+
+// StopTracking Stop tracking object
+func (b *Blobie) StopTracking() {
+	(*b).IsStillBeingTracked = false
+}
+
+// AsCounted Set object as counted
+func (b *Blobie) AsCounted() {
+	(*b).Counted = true
 }
 
 // PredictNextPosition - predict next position
