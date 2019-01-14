@@ -13,7 +13,7 @@ This small package implements basics of blob tracking (see ref. https://github.c
 
 ## Installation
 
-First of all you need OpenCV to be install on your operation system. Also you need [GoCV](https://github.com/hybridgroup/gocv) package to be installed too. Please see ref. here https://github.com/hybridgroup/gocv#how-to-install
+First of all you need OpenCV to be installed on your operation system. Also you need [GoCV](https://github.com/hybridgroup/gocv) package to be installed too. Please see ref. here https://github.com/hybridgroup/gocv#how-to-install
 
 Then you are good to go with:
 ```go
