@@ -17,7 +17,7 @@ First of all you need OpenCV to be install on your operation system. Also you ne
 
 Then you are good to go with:
 ```go
-github.com/LdDl/gocv-blob
+go get github.com/LdDl/gocv-blob
 ```
 
 p.s. do not be worried when you see *can't load package: package github.com/LdDl/gocv-blob: no Go files....* - this is just warning.
