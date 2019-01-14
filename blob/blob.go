@@ -8,7 +8,7 @@ import (
 	"gocv.io/x/gocv"
 )
 
-// Blobie - detected candidate
+// Blobie - Detected candidate to be target object
 type Blobie struct {
 	CurrentRect                         image.Rectangle
 	CurrentContour                      []image.Point
@@ -23,41 +23,39 @@ type Blobie struct {
 	NumOfConsecutiveFramesWithoutAMatch int
 }
 
-// Blobies - array of blobs
+// Blobies - Array of blobs
 type Blobies []*Blobie
 
-// NewBlobieFromRect - create new blob via rect (image.Rectangle)
+// NewBlobieFromRect - Blobie constructor. Rect as provider
 func NewBlobieFromRect(rect *image.Rectangle) *Blobie {
-
 	var currentCenter image.Point
 	var rectWidth = (*rect).Dx()
 	var rectHeight = (*rect).Dy()
 	currentCenter.X = ((*rect).Min.X*2 + rectWidth) / 2
 	currentCenter.Y = ((*rect).Min.Y*2 + rectHeight) / 2
-
 	var b = Blobie{
-		CurrentRect:         (*rect),
-		Track:               []image.Point{currentCenter},
-		Area:                float64(rectWidth * rectHeight),
-		Diagonal:            math.Sqrt(math.Pow(float64(rectWidth), 2) + math.Pow(float64(rectHeight), 2)),
-		AspectRatio:         float64(rectWidth) / float64(rectHeight),
-		IsStillBeingTracked: true,
-		Counted:             false,
-		IsExists:            true,
+		CurrentRect:                         (*rect),
+		Track:                               []image.Point{currentCenter},
+		Area:                                float64(rectWidth * rectHeight),
+		Diagonal:                            math.Sqrt(math.Pow(float64(rectWidth), 2) + math.Pow(float64(rectHeight), 2)),
+		AspectRatio:                         float64(rectWidth) / float64(rectHeight),
+		IsStillBeingTracked:                 true,
+		Counted:                             false,
+		IsExists:                            true,
 		NumOfConsecutiveFramesWithoutAMatch: 0,
 	}
-
 	return &b
 }
 
-// NewBlobieFromContour - create new blob via contour ([]image.Point)
+// NewBlobieFromContour - Blobie constructor. Contour (pointer to array of image.Point) as provider
 func NewBlobieFromContour(contour *[]image.Point) *Blobie {
 	var b Blobie
 	// gocv.ContourArea((*contour))
+	// @todo !!!
 	return &b
 }
 
-// IsCrossedTheLine - check if blob crossed the line
+// IsCrossedTheLine - Check if blob crossed the HORIZONTAL line
 func (b *Blobie) IsCrossedTheLine(horizontal int, counter *int, direction bool) bool {
 	if (*b).IsStillBeingTracked == true && len((*b).Track) >= 2 && (*b).Counted == false {
 		prevFrame := len((*b).Track) - 2
@@ -79,31 +77,39 @@ func (b *Blobie) IsCrossedTheLine(horizontal int, counter *int, direction bool) 
 	return false
 }
 
-// DrawTrack - draw blob's track
-func (b *Blobie) DrawTrack(mat *gocv.Mat, id string) {
+// DrawTrack - Draw blob's track
+func (b *Blobie) DrawTrack(mat *gocv.Mat, optionalText string) {
 	if (*b).IsStillBeingTracked == true {
 		for i := range (*b).Track {
 			gocv.Circle(mat, (*b).Track[i], 4, color.RGBA{255, 0, 0, 0}, 1)
 		}
-		gocv.Rectangle(mat, (*b).CurrentRect, color.RGBA{255, 255, 0, 0}, 2)
+		gocv.Rectangle(mat, (*b).CurrentRect, color.RGBA{0, 255, 255, 0}, 2)
 		pt := image.Pt((*b).CurrentRect.Min.X, (*b).CurrentRect.Min.Y)
-		gocv.PutText(mat, "Object ID: "+id, pt, gocv.FontHersheyPlain, 1.2, color.RGBA{0, 255, 0, 0}, 2)
+		gocv.PutText(mat, optionalText, pt, gocv.FontHersheyPlain, 1.2, color.RGBA{0, 255, 0, 0}, 2)
 	}
 }
 
-// StopTracking Stop tracking object
+// GetRect - Get blob's rect
+func (b *Blobie) GetRect(mat *gocv.Mat, id string) image.Rectangle {
+	if (*b).IsStillBeingTracked == true {
+		return (*b).CurrentRect
+	}
+	return image.Rectangle{}
+}
+
+// StopTracking - Stop tracking object
 func (b *Blobie) StopTracking() {
 	(*b).IsStillBeingTracked = false
 }
 
-// AsCounted Set object as counted
+// AsCounted - Set object as counted
 func (b *Blobie) AsCounted() {
 	(*b).Counted = true
 }
 
-// PredictNextPosition - predict next position
+// PredictNextPosition - Predict next position
 func (b *Blobie) PredictNextPosition() {
-	account := Min(5, int64(len((*b).Track)))
+	account := min(5, int64(len((*b).Track)))
 	prev := len((*b).Track) - 1
 	current := prev - 1
 	var deltaX, deltaY, sum int = 0, 0, 0
@@ -118,23 +124,20 @@ func (b *Blobie) PredictNextPosition() {
 	}
 	(*b).PredictedNextPosition.X = (*b).Track[len((*b).Track)-1].X + deltaX
 	(*b).PredictedNextPosition.Y = (*b).Track[len((*b).Track)-1].Y + deltaY
-
-	// log.Println((*b).PredictedNextPosition)
 }
 
-// MatchToExisting - check if blob already exists
+// MatchToExisting Check if blob already exists
 func (bExisting *Blobies) MatchToExisting(bCurrent *Blobies) {
 	for _, b := range *bExisting {
 		(*b).IsExists = false
 		(*b).PredictNextPosition()
 	}
-
 	for _, b := range *bCurrent {
 		var intIndexOfLeastDistance = 0
 		var dblLeastDistance = 200000.0
 		for i := range *bExisting {
 			if (*bExisting)[i].IsStillBeingTracked == true {
-				dblDistance := DistanceBetweenPoints((b).Track[len((*b).Track)-1], (*bExisting)[i].PredictedNextPosition)
+				dblDistance := distanceBetweenPoints((b).Track[len((*b).Track)-1], (*bExisting)[i].PredictedNextPosition)
 				if dblDistance < dblLeastDistance {
 					dblLeastDistance = dblDistance
 					intIndexOfLeastDistance = i
@@ -147,7 +150,6 @@ func (bExisting *Blobies) MatchToExisting(bCurrent *Blobies) {
 			(*bExisting).AddNew(b)
 		}
 	}
-
 	for _, b := range *bExisting {
 		if (*b).IsExists == false {
 			(*b).NumOfConsecutiveFramesWithoutAMatch++
@@ -159,7 +161,7 @@ func (bExisting *Blobies) MatchToExisting(bCurrent *Blobies) {
 
 }
 
-// AddToExisting - add blob to existing blobs
+// AddToExisting Add blob to existing blobs
 func (bExisting *Blobies) AddToExisting(bCurrent *Blobie, intIndex int) {
 	(*bExisting)[intIndex].CurrentRect = (*bCurrent).CurrentRect
 	(*bExisting)[intIndex].Track = append((*bExisting)[intIndex].Track, (*bCurrent).Track[len((*bCurrent).Track)-1])
@@ -169,13 +171,47 @@ func (bExisting *Blobies) AddToExisting(bCurrent *Blobie, intIndex int) {
 	(*bExisting)[intIndex].IsExists = true
 }
 
-// AddNew - add new blob
+// AddNew Add new blob to array of blobs
 func (bExisting *Blobies) AddNew(bCurrent *Blobie) {
 	(*bCurrent).IsExists = true
 	(*bExisting) = append((*bExisting), bCurrent)
 }
 
-// Flush Delete all blobies
+// Flush - Delete all blobies
 func (bExisting *Blobies) Flush() {
 	(*bExisting) = Blobies{}
+}
+
+func min(x, y int64) int64 {
+	if x < y {
+		return x
+	}
+	return y
+}
+
+func max(x, y int64) int64 {
+	if x > y {
+		return x
+	}
+	return y
+}
+
+func minf(x, y float32) float32 {
+	if x < y {
+		return x
+	}
+	return y
+}
+
+func maxf(x, y float32) float32 {
+	if x > y {
+		return x
+	}
+	return y
+}
+
+func distanceBetweenPoints(p1 image.Point, p2 image.Point) float64 {
+	intX := math.Abs(float64(p1.X - p2.X))
+	intY := math.Abs(float64(p1.Y - p2.Y))
+	return math.Sqrt(math.Pow(intX, 2) + math.Pow(intY, 2))
 }
