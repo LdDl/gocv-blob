@@ -2,114 +2,98 @@ package blob
 
 import (
 	"image"
-	"image/color"
 	"math"
-
-	"gocv.io/x/gocv"
 )
 
-// Blobie - Detected candidate to be target object
+// Blobie - Main blob structure
 type Blobie struct {
-	CurrentRect                         image.Rectangle
-	CurrentContour                      []image.Point
-	Track                               []image.Point
-	PredictedNextPosition               image.Point
-	Diagonal                            float64
-	AspectRatio                         float64
-	Area                                float64
-	IsExists                            bool
-	IsStillBeingTracked                 bool
-	Counted                             bool
-	NumOfConsecutiveFramesWithoutAMatch int
+	CurrentRect           image.Rectangle
+	Center                image.Point
+	Area                  float64
+	Diagonal              float64
+	AspectRatio           float64
+	Track                 []image.Point
+	maxPointsInTrack      int
+	isExists              bool
+	isStillBeingTracked   bool
+	noMatchTimes          int
+	PredictedNextPosition image.Point
+
+	// For array tracker
+	crossedLine bool
 }
 
-// Blobies - Array of blobs
-type Blobies []*Blobie
+// NewBlobie - Constructor for Blobie (default values)
+func NewBlobie(rect image.Rectangle, maxPointsInTrack int) *Blobie {
+	center := image.Pt((rect.Min.X*2+rect.Dx())/2, (rect.Min.Y*2+rect.Dy())/2)
+	width := float64(rect.Dx())
+	height := float64(rect.Dy())
+	return &Blobie{
+		CurrentRect:         rect,
+		Center:              center,
+		Area:                width * height,
+		Diagonal:            math.Sqrt(math.Pow(width, 2) + math.Pow(height, 2)),
+		AspectRatio:         width / height,
+		Track:               []image.Point{center},
+		maxPointsInTrack:    maxPointsInTrack,
+		isExists:            true,
+		isStillBeingTracked: true,
+		noMatchTimes:        0,
 
-// NewBlobieFromRect - Blobie constructor. Rect as provider
-func NewBlobieFromRect(rect *image.Rectangle) *Blobie {
-	var currentCenter image.Point
-	var rectWidth = (*rect).Dx()
-	var rectHeight = (*rect).Dy()
-	currentCenter.X = ((*rect).Min.X*2 + rectWidth) / 2
-	currentCenter.Y = ((*rect).Min.Y*2 + rectHeight) / 2
-	var b = Blobie{
-		CurrentRect:                         (*rect),
-		Track:                               []image.Point{currentCenter},
-		Area:                                float64(rectWidth * rectHeight),
-		Diagonal:                            math.Sqrt(math.Pow(float64(rectWidth), 2) + math.Pow(float64(rectHeight), 2)),
-		AspectRatio:                         float64(rectWidth) / float64(rectHeight),
-		IsStillBeingTracked:                 true,
-		Counted:                             false,
-		IsExists:                            true,
-		NumOfConsecutiveFramesWithoutAMatch: 0,
-	}
-	return &b
-}
-
-// NewBlobieFromContour - Blobie constructor. Contour (pointer to array of image.Point) as provider
-func NewBlobieFromContour(contour *[]image.Point) *Blobie {
-	var b Blobie
-	// gocv.ContourArea((*contour))
-	// @todo !!!
-	return &b
-}
-
-// IsCrossedTheLine - Check if blob crossed the HORIZONTAL line
-func (b *Blobie) IsCrossedTheLine(horizontal int, counter *int, direction bool) bool {
-	if (*b).IsStillBeingTracked == true && len((*b).Track) >= 2 && (*b).Counted == false {
-		prevFrame := len((*b).Track) - 2
-		currFrame := len((*b).Track) - 1
-		if direction {
-			if (*b).Track[prevFrame].Y <= horizontal && (*b).Track[currFrame].Y > horizontal { // TO us
-				*counter++
-				b.AsCounted()
-				return true
-			}
-		} else {
-			if (*b).Track[prevFrame].Y > horizontal && (*b).Track[currFrame].Y <= horizontal { // FROM us
-				*counter++
-				b.AsCounted()
-				return true
-			}
-		}
-	}
-	return false
-}
-
-// DrawTrack - Draw blob's track
-func (b *Blobie) DrawTrack(mat *gocv.Mat, optionalText string) {
-	if (*b).IsStillBeingTracked == true {
-		for i := range (*b).Track {
-			gocv.Circle(mat, (*b).Track[i], 4, color.RGBA{255, 0, 0, 0}, 1)
-		}
-		gocv.Rectangle(mat, (*b).CurrentRect, color.RGBA{0, 255, 255, 0}, 2)
-		pt := image.Pt((*b).CurrentRect.Min.X, (*b).CurrentRect.Min.Y)
-		gocv.PutText(mat, optionalText, pt, gocv.FontHersheyPlain, 1.2, color.RGBA{0, 255, 0, 0}, 2)
+		crossedLine: false,
 	}
 }
 
-// GetRect - Get blob's rect
-func (b *Blobie) GetRect(mat *gocv.Mat, id string) image.Rectangle {
-	if (*b).IsStillBeingTracked == true {
-		return (*b).CurrentRect
+// NewBlobieDefaults - Constructor for Blobie (default values)
+//
+// Default values are:
+// maxPointsInTrack = 10
+//
+func NewBlobieDefaults(rect image.Rectangle) *Blobie {
+	center := image.Pt((rect.Min.X*2+rect.Dx())/2, (rect.Min.Y*2+rect.Dy())/2)
+	width := float64(rect.Dx())
+	height := float64(rect.Dy())
+	return &Blobie{
+		CurrentRect:         rect,
+		Center:              center,
+		Area:                width * height,
+		Diagonal:            math.Sqrt(math.Pow(width, 2) + math.Pow(height, 2)),
+		AspectRatio:         width / height,
+		Track:               []image.Point{center},
+		maxPointsInTrack:    10,
+		isExists:            true,
+		isStillBeingTracked: true,
+		noMatchTimes:        0,
+
+		crossedLine: false,
 	}
-	return image.Rectangle{}
 }
 
-// StopTracking - Stop tracking object
-func (b *Blobie) StopTracking() {
-	(*b).IsStillBeingTracked = false
+// Update - Update info about blob
+func (b *Blobie) Update(newb Blobie) {
+	b.CurrentRect = newb.CurrentRect
+	b.Center = newb.Center
+	b.Area = newb.Area
+	b.Diagonal = newb.Diagonal
+	b.AspectRatio = newb.AspectRatio
+	b.isStillBeingTracked = true
+	b.isExists = true
+	// Append new point to track
+	b.Track = append(b.Track, newb.Center)
+	// Restrict number of points in track (shift to the left)
+	if len(b.Track) > b.maxPointsInTrack {
+		// b.Track = b.Track[1:]
+	}
 }
 
-// AsCounted - Set object as counted
-func (b *Blobie) AsCounted() {
-	(*b).Counted = true
+// GetLastPoint - Return last point from blob's track
+func (b *Blobie) GetLastPoint() image.Point {
+	return b.Track[len(b.Track)-1]
 }
 
-// PredictNextPosition - Predict next position
-func (b *Blobie) PredictNextPosition() {
-	account := min(5, int64(len((*b).Track)))
+// PredictNextPosition - Predict next N coordinates
+func (b *Blobie) PredictNextPosition(n int) {
+	account := min(n, len((*b).Track))
 	prev := len((*b).Track) - 1
 	current := prev - 1
 	var deltaX, deltaY, sum int = 0, 0, 0
@@ -126,88 +110,69 @@ func (b *Blobie) PredictNextPosition() {
 	(*b).PredictedNextPosition.Y = (*b).Track[len((*b).Track)-1].Y + deltaY
 }
 
-// MatchToExisting Check if blob already exists
-func (bExisting *Blobies) MatchToExisting(bCurrent *Blobies) {
-	for _, b := range *bExisting {
-		(*b).IsExists = false
-		(*b).PredictNextPosition()
-	}
-	for _, b := range *bCurrent {
-		var intIndexOfLeastDistance = 0
-		var dblLeastDistance = 200000.0
-		for i := range *bExisting {
-			if (*bExisting)[i].IsStillBeingTracked == true {
-				dblDistance := distanceBetweenPoints((b).Track[len((*b).Track)-1], (*bExisting)[i].PredictedNextPosition)
-				if dblDistance < dblLeastDistance {
-					dblLeastDistance = dblDistance
-					intIndexOfLeastDistance = i
-				}
-			}
-		}
-		if dblLeastDistance < (*b).Diagonal*0.5 {
-			(*bExisting).AddToExisting(b, intIndexOfLeastDistance)
-		} else {
-			(*bExisting).AddNew(b)
-		}
-	}
-	for _, b := range *bExisting {
-		if (*b).IsExists == false {
-			(*b).NumOfConsecutiveFramesWithoutAMatch++
-		}
-		if (*b).NumOfConsecutiveFramesWithoutAMatch >= 5 {
-			(*b).IsStillBeingTracked = false
-		}
-	}
+// // IsCrossedTheLine - Check if blob crossed the HORIZONTAL line
+// func (b *Blobie) IsCrossedTheLine(horizontal int, counter *int, direction bool) bool {
+// 	if (*b).isStillBeingTracked == true && len((*b).Track) >= 2 && (*b).counted == false {
+// 		prevFrame := len((*b).Track) - 2
+// 		currFrame := len((*b).Track) - 1
+// 		if direction {
+// 			if (*b).Track[prevFrame].Y <= horizontal && (*b).Track[currFrame].Y > horizontal { // TO us
+// 				*counter++
+// 				b.AsCounted()
+// 				return true
+// 			}
+// 		} else {
+// 			if (*b).Track[prevFrame].Y > horizontal && (*b).Track[currFrame].Y <= horizontal { // FROM us
+// 				*counter++
+// 				b.AsCounted()
+// 				return true
+// 			}
+// 		}
+// 	}
+// 	return false
+// }
 
-}
+// // DrawTrack - Draw blob's track
+// func (b *Blobie) DrawTrack(mat *gocv.Mat, optionalText string) {
+// 	if (*b).isStillBeingTracked == true {
+// 		for i := range (*b).Track {
+// 			gocv.Circle(mat, (*b).Track[i], 4, color.RGBA{255, 0, 0, 0}, 1)
+// 		}
+// 		gocv.Rectangle(mat, (*b).CurrentRect, color.RGBA{0, 255, 255, 0}, 2)
+// 		pt := image.Pt((*b).CurrentRect.Min.X, (*b).CurrentRect.Min.Y)
+// 		gocv.PutText(mat, optionalText, pt, gocv.FontHersheyPlain, 1.2, color.RGBA{0, 255, 0, 0}, 2)
+// 	}
+// }
 
-// AddToExisting Add blob to existing blobs
-func (bExisting *Blobies) AddToExisting(bCurrent *Blobie, intIndex int) {
-	(*bExisting)[intIndex].CurrentRect = (*bCurrent).CurrentRect
-	(*bExisting)[intIndex].Track = append((*bExisting)[intIndex].Track, (*bCurrent).Track[len((*bCurrent).Track)-1])
-	(*bExisting)[intIndex].Diagonal = (*bCurrent).Diagonal
-	(*bExisting)[intIndex].AspectRatio = (*bCurrent).AspectRatio
-	(*bExisting)[intIndex].IsStillBeingTracked = true
-	(*bExisting)[intIndex].IsExists = true
-}
-
-// AddNew Add new blob to array of blobs
-func (bExisting *Blobies) AddNew(bCurrent *Blobie) {
-	(*bCurrent).IsExists = true
-	(*bExisting) = append((*bExisting), bCurrent)
-}
-
-// Flush - Delete all blobies
-func (bExisting *Blobies) Flush() {
-	(*bExisting) = Blobies{}
-}
-
-func min(x, y int64) int64 {
+func min(x, y int) int {
 	if x < y {
 		return x
 	}
 	return y
 }
 
-func max(x, y int64) int64 {
-	if x > y {
-		return x
-	}
-	return y
+// func minf(x, y float32) float32 {
+// 	if x < y {
+// 		return x
+// 	}
+// 	return y
+// }
+
+// func maxf(x, y float32) float32 {
+// 	if x > y {
+// 		return x
+// 	}
+// 	return y
+// }
+
+func distanceBetweenBlobies(b1 *Blobie, b2 *Blobie) float64 {
+	return distanceBetweenPointsPtr(&b1.Center, &b2.Center)
 }
 
-func minf(x, y float32) float32 {
-	if x < y {
-		return x
-	}
-	return y
-}
-
-func maxf(x, y float32) float32 {
-	if x > y {
-		return x
-	}
-	return y
+func distanceBetweenPointsPtr(p1 *image.Point, p2 *image.Point) float64 {
+	intX := math.Abs(float64(p1.X - p2.X))
+	intY := math.Abs(float64(p1.Y - p2.Y))
+	return math.Sqrt(math.Pow(intX, 2) + math.Pow(intY, 2))
 }
 
 func distanceBetweenPoints(p1 image.Point, p2 image.Point) float64 {
