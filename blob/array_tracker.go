@@ -107,7 +107,7 @@ func (b *Blobie) DrawTrack(mat *gocv.Mat, optionalText string) {
 		for i := range (*b).Track {
 			gocv.Circle(mat, (*b).Track[i], 4, color.RGBA{255, 0, 0, 0}, 1)
 		}
-		gocv.Rectangle(mat, (*b).CurrentRect, color.RGBA{0, 255, 255, 0}, 2)
+		gocv.Rectangle(mat, (*b).CurrentRect, color.RGBA{255, 255, 0, 0}, 2)
 		pt := image.Pt((*b).CurrentRect.Min.X, (*b).CurrentRect.Min.Y)
 		gocv.PutText(mat, optionalText, pt, gocv.FontHersheyPlain, 1.2, color.RGBA{0, 255, 0, 0}, 2)
 	}
