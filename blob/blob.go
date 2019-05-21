@@ -3,10 +3,13 @@ package blob
 import (
 	"image"
 	"math"
+
+	uuid "github.com/satori/go.uuid"
 )
 
 // Blobie - Main blob structure
 type Blobie struct {
+	ID                    uuid.UUID
 	CurrentRect           image.Rectangle
 	Center                image.Point
 	Area                  float64

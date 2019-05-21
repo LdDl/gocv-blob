@@ -92,6 +92,7 @@ func (bt *Blobies) Register(b *Blobie) error {
 	if err != nil {
 		return err
 	}
+	b.ID = newUUID
 	bt.Objects[newUUID] = b
 	return nil
 }
