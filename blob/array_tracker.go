@@ -47,6 +47,8 @@ func (bt *Blobies) MatchToExisting(rects []image.Rectangle) {
 		minDistance := math.MaxFloat64
 		for j := range (*bt).Objects {
 			dist := distanceBetweenPoints(blobies[i].Center, (*bt).Objects[j].Center)
+			distPredicted := distanceBetweenPoints(blobies[i].Center, (*bt).Objects[j].PredictedNextPosition)
+			dist = minf64(dist, distPredicted)
 			if dist < minDistance {
 				minDistance = dist
 				minUUID = j

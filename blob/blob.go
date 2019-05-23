@@ -154,19 +154,19 @@ func min(x, y int) int {
 	return y
 }
 
-// func minf(x, y float32) float32 {
-// 	if x < y {
-// 		return x
-// 	}
-// 	return y
-// }
+func minf64(x, y float64) float64 {
+	if x < y {
+		return x
+	}
+	return y
+}
 
-// func maxf(x, y float32) float32 {
-// 	if x > y {
-// 		return x
-// 	}
-// 	return y
-// }
+func maxf64(x, y float64) float64 {
+	if x > y {
+		return x
+	}
+	return y
+}
 
 func distanceBetweenBlobies(b1 *Blobie, b2 *Blobie) float64 {
 	return distanceBetweenPointsPtr(&b1.Center, &b2.Center)
