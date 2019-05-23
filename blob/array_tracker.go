@@ -3,6 +3,7 @@ package blob
 import (
 	"image"
 	"image/color"
+	"math"
 
 	uuid "github.com/satori/go.uuid"
 	"gocv.io/x/gocv"
@@ -32,8 +33,6 @@ func NewBlobiesDefaults() *Blobies {
 	}
 }
 
-var arrayCounter = 1
-
 // MatchToExisting Check if blob already exists
 func (bt *Blobies) MatchToExisting(rects []image.Rectangle) {
 	bt.prepare()
@@ -42,31 +41,24 @@ func (bt *Blobies) MatchToExisting(rects []image.Rectangle) {
 		blobies[i] = NewBlobie(rects[i], bt.maxPointsInTrack)
 	}
 
-	//log.Println("range before", len(*blobies), len(*bt))
 	for i := range blobies {
-		var minIndex uuid.UUID
-		var minDistance = 200000.0
+		minUUID := uuid.UUID{}
+		_ = minUUID
+		minDistance := math.MaxFloat64
 		for j := range (*bt).Objects {
-			if bt.Objects[j].isStillBeingTracked == true {
-				dist := distanceBetweenPoints(blobies[i].GetLastPoint(), (*bt).Objects[j].PredictedNextPosition)
-				if dist < minDistance {
-					minDistance = dist
-					minIndex = j
-				}
+			dist := distanceBetweenPoints(blobies[i].Center, (*bt).Objects[j].Center)
+			if dist < minDistance {
+				minDistance = dist
+				minUUID = j
 			}
 		}
-		// if minIndex == 0 {
-		// 	log.Println("zero dawn", 0)
-		// }
-		// log.Println("dist", minDistance)
-		if minDistance < blobies[i].Diagonal*0.5 {
-			//log.Println("min dist", minDistance, (*b).Diagonal)
-			bt.Objects[minIndex].Update(*blobies[i])
+		if minDistance < blobies[i].Diagonal*0.5 || minDistance < bt.minThresholdDistance {
+			bt.Objects[minUUID].Update(*blobies[i])
 		} else {
-			//bt.AddNew(blobies[i])
 			bt.Register(blobies[i])
 		}
 	}
+
 	for i, b := range (*bt).Objects {
 		if b.isExists == false {
 			b.noMatchTimes++
@@ -76,7 +68,6 @@ func (bt *Blobies) MatchToExisting(rects []image.Rectangle) {
 			bt.deregister(i)
 		}
 	}
-
 }
 
 func (bt *Blobies) prepare() {
