@@ -1,4 +1,5 @@
 # gocv-blob
+Blob tracking via GoCV package
 
 ## Table of Contents
 
