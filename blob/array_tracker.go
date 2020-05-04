@@ -33,7 +33,7 @@ func NewBlobiesDefaults() *Blobies {
 	}
 }
 
-// MatchToExisting Check if blob already exists
+// MatchToExisting Check if some of blobs already exists
 func (bt *Blobies) MatchToExisting(rects []image.Rectangle) {
 	bt.prepare()
 	blobies := make([]*Blobie, len(rects))
@@ -43,7 +43,6 @@ func (bt *Blobies) MatchToExisting(rects []image.Rectangle) {
 
 	for i := range blobies {
 		minUUID := uuid.UUID{}
-		_ = minUUID
 		minDistance := math.MaxFloat64
 		for j := range (*bt).Objects {
 			dist := distanceBetweenPoints(blobies[i].Center, (*bt).Objects[j].Center)
@@ -61,6 +60,10 @@ func (bt *Blobies) MatchToExisting(rects []image.Rectangle) {
 		}
 	}
 
+	bt.RefreshNoMatch()
+}
+
+func (bt *Blobies) RefreshNoMatch() {
 	for i, b := range (*bt).Objects {
 		if b.isExists == false {
 			b.noMatchTimes++
