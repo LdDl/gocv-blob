@@ -85,7 +85,7 @@ func (b *Blobie) Update(newb Blobie) {
 	b.Track = append(b.Track, newb.Center)
 	// Restrict number of points in track (shift to the left)
 	if len(b.Track) > b.maxPointsInTrack {
-		// b.Track = b.Track[1:]
+		 b.Track = b.Track[1:]
 	}
 }
 
