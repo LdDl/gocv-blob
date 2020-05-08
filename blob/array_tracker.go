@@ -2,11 +2,9 @@ package blob
 
 import (
 	"image"
-	"image/color"
 	"math"
 
 	uuid "github.com/satori/go.uuid"
-	"gocv.io/x/gocv"
 )
 
 // Blobies - Array of blobs
@@ -15,6 +13,8 @@ type Blobies struct {
 	maxNoMatch           int
 	minThresholdDistance float64
 	maxPointsInTrack     int
+
+	DrawingOptions *DrawOptions
 }
 
 // NewBlobiesDefaults - Constructor for Blobies (default values)
@@ -30,6 +30,7 @@ func NewBlobiesDefaults() *Blobies {
 		maxNoMatch:           5,
 		minThresholdDistance: 15,
 		maxPointsInTrack:     10,
+		DrawingOptions:       NewDrawOptionsDefault(),
 	}
 }
 
@@ -39,6 +40,7 @@ func (bt *Blobies) MatchToExisting(rects []image.Rectangle) {
 	blobies := make([]*Blobie, len(rects))
 	for i := range blobies {
 		blobies[i] = NewBlobie(rects[i], bt.maxPointsInTrack)
+		blobies[i].drawingOptions = bt.DrawingOptions
 	}
 
 	for i := range blobies {
@@ -96,18 +98,6 @@ func (bt *Blobies) Register(b *Blobie) error {
 // deregister - deregister blob with provided uuid
 func (bt *Blobies) deregister(guid uuid.UUID) {
 	delete(bt.Objects, guid)
-}
-
-// DrawTrack - Draw blob's track
-func (b *Blobie) DrawTrack(mat *gocv.Mat, optionalText string) {
-	gocv.Rectangle(mat, (*b).CurrentRect, color.RGBA{255, 255, 0, 0}, 2)
-	if (*b).isStillBeingTracked {
-		for i := range (*b).Track {
-			gocv.Circle(mat, (*b).Track[i], 4, color.RGBA{255, 0, 0, 0}, 1)
-		}
-		pt := image.Pt((*b).CurrentRect.Min.X, (*b).CurrentRect.Min.Y)
-		gocv.PutText(mat, optionalText, pt, gocv.FontHersheyPlain, 1.2, color.RGBA{0, 255, 0, 0}, 2)
-	}
 }
 
 // IsCrossedTheLine - Check if blob crossed the HORIZONTAL line

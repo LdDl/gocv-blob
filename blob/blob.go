@@ -5,6 +5,7 @@ import (
 	"math"
 
 	uuid "github.com/satori/go.uuid"
+	"gocv.io/x/gocv"
 )
 
 // Blobie - Main blob structure
@@ -23,7 +24,8 @@ type Blobie struct {
 	PredictedNextPosition image.Point
 
 	// For array tracker
-	crossedLine bool
+	drawingOptions *DrawOptions
+	crossedLine    bool
 }
 
 // NewBlobie - Constructor for Blobie (default values)
@@ -113,39 +115,20 @@ func (b *Blobie) PredictNextPosition(n int) {
 	(*b).PredictedNextPosition.Y = (*b).Track[len((*b).Track)-1].Y + deltaY
 }
 
-// // IsCrossedTheLine - Check if blob crossed the HORIZONTAL line
-// func (b *Blobie) IsCrossedTheLine(horizontal int, counter *int, direction bool) bool {
-// 	if (*b).isStillBeingTracked == true && len((*b).Track) >= 2 && (*b).counted == false {
-// 		prevFrame := len((*b).Track) - 2
-// 		currFrame := len((*b).Track) - 1
-// 		if direction {
-// 			if (*b).Track[prevFrame].Y <= horizontal && (*b).Track[currFrame].Y > horizontal { // TO us
-// 				*counter++
-// 				b.AsCounted()
-// 				return true
-// 			}
-// 		} else {
-// 			if (*b).Track[prevFrame].Y > horizontal && (*b).Track[currFrame].Y <= horizontal { // FROM us
-// 				*counter++
-// 				b.AsCounted()
-// 				return true
-// 			}
-// 		}
-// 	}
-// 	return false
-// }
-
-// // DrawTrack - Draw blob's track
-// func (b *Blobie) DrawTrack(mat *gocv.Mat, optionalText string) {
-// 	if (*b).isStillBeingTracked == true {
-// 		for i := range (*b).Track {
-// 			gocv.Circle(mat, (*b).Track[i], 4, color.RGBA{255, 0, 0, 0}, 1)
-// 		}
-// 		gocv.Rectangle(mat, (*b).CurrentRect, color.RGBA{0, 255, 255, 0}, 2)
-// 		pt := image.Pt((*b).CurrentRect.Min.X, (*b).CurrentRect.Min.Y)
-// 		gocv.PutText(mat, optionalText, pt, gocv.FontHersheyPlain, 1.2, color.RGBA{0, 255, 0, 0}, 2)
-// 	}
-// }
+// DrawTrack - Draw blob's track
+func (b *Blobie) DrawTrack(mat *gocv.Mat, optionalText string) {
+	if b.drawingOptions == nil {
+		b.drawingOptions = NewDrawOptionsDefault()
+	}
+	gocv.Rectangle(mat, b.CurrentRect, b.drawingOptions.BBoxColor.Color, b.drawingOptions.BBoxColor.Thickness)
+	if b.isStillBeingTracked {
+		for i := range b.Track {
+			gocv.Circle(mat, b.Track[i], b.drawingOptions.CentroidColor.Radius, b.drawingOptions.CentroidColor.Color, b.drawingOptions.CentroidColor.Thickness)
+		}
+		pt := image.Pt(b.CurrentRect.Min.X, b.CurrentRect.Min.Y)
+		gocv.PutText(mat, optionalText, pt, gocv.FontHersheyPlain, b.drawingOptions.TextColor.Scale, b.drawingOptions.TextColor.Color, b.drawingOptions.TextColor.Thickness)
+	}
+}
 
 func min(x, y int) int {
 	if x < y {
