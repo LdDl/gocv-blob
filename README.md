@@ -1,3 +1,8 @@
+[![GoDoc](https://godoc.org/github.com/LdDl/gocv-blob?status.svg)](https://godoc.org/github.com/LdDl/gocv-blob)
+[![Sourcegraph](https://sourcegraph.com/github.com/LdDl/gocv-blob/-/badge.svg)](https://sourcegraph.com/github.com/LdDl/gocv-blob?badge)
+[![Go Report Card](https://goreportcard.com/badge/github.com/LdDl/gocv-blob)](https://goreportcard.com/report/github.com/LdDl/gocv-blob)
+[![GitHub tag](https://img.shields.io/github/tag/LdDl/gocv-blob.svg)](https://github.com/LdDl/gocv-blob/releases)
+
 # gocv-blob
 Blob tracking via GoCV package
 
