@@ -86,10 +86,7 @@ func (bt *Blobies) prepare() {
 
 // Register - Register new blob
 func (bt *Blobies) Register(b *Blobie) error {
-	newUUID, err := uuid.NewV4()
-	if err != nil {
-		return err
-	}
+	newUUID := uuid.NewV4()
 	b.ID = newUUID
 	bt.Objects[newUUID] = b
 	return nil
