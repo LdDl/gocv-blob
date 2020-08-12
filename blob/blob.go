@@ -97,6 +97,16 @@ func (b *Blobie) SetClassName(className string) {
 	b.className = className
 }
 
+// GetClassID - Return class identifier
+func (b *Blobie) GetClassID() int {
+	return b.classID
+}
+
+// GetClassName - Return class name
+func (b *Blobie) GetClassName() string {
+	return b.className
+}
+
 // Update - Update info about blob
 func (b *Blobie) Update(newb Blobie) {
 	b.CurrentRect = newb.CurrentRect
