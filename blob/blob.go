@@ -107,6 +107,16 @@ func (b *Blobie) GetClassName() string {
 	return b.className
 }
 
+// SetDraw - Set options for drawing
+func (b *Blobie) SetDraw(drawOptions *DrawOptions) {
+	b.drawingOptions = drawOptions
+}
+
+// GetDraw - Return options for drawing
+func (b *Blobie) GetDraw() *DrawOptions {
+	return b.drawingOptions
+}
+
 // Update - Update info about blob
 func (b *Blobie) Update(newb Blobie) {
 	b.CurrentRect = newb.CurrentRect
