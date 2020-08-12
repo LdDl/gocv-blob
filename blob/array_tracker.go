@@ -1,7 +1,6 @@
 package blob
 
 import (
-	"image"
 	"math"
 
 	uuid "github.com/satori/go.uuid"
@@ -35,14 +34,8 @@ func NewBlobiesDefaults() *Blobies {
 }
 
 // MatchToExisting Check if some of blobs already exists
-func (bt *Blobies) MatchToExisting(rects []image.Rectangle) {
+func (bt *Blobies) MatchToExisting(blobies []*Blobie) {
 	bt.prepare()
-	blobies := make([]*Blobie, len(rects))
-	for i := range blobies {
-		blobies[i] = NewBlobie(rects[i], bt.maxPointsInTrack)
-		blobies[i].drawingOptions = bt.DrawingOptions
-	}
-
 	for i := range blobies {
 		minUUID := uuid.UUID{}
 		minDistance := math.MaxFloat64
@@ -61,10 +54,10 @@ func (bt *Blobies) MatchToExisting(rects []image.Rectangle) {
 			bt.Register(blobies[i])
 		}
 	}
-
 	bt.RefreshNoMatch()
 }
 
+// RefreshNoMatch - Refresh state of each blob
 func (bt *Blobies) RefreshNoMatch() {
 	for i, b := range (*bt).Objects {
 		if b.isExists == false {

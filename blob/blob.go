@@ -23,13 +23,16 @@ type Blobie struct {
 	noMatchTimes          int
 	PredictedNextPosition image.Point
 
+	classID   int
+	className string
+
 	// For array tracker
 	drawingOptions *DrawOptions
 	crossedLine    bool
 }
 
 // NewBlobie - Constructor for Blobie (default values)
-func NewBlobie(rect image.Rectangle, maxPointsInTrack int) *Blobie {
+func NewBlobie(rect image.Rectangle, maxPointsInTrack, classID int, className string) *Blobie {
 	center := image.Pt((rect.Min.X*2+rect.Dx())/2, (rect.Min.Y*2+rect.Dy())/2)
 	width := float64(rect.Dx())
 	height := float64(rect.Dy())
@@ -45,6 +48,8 @@ func NewBlobie(rect image.Rectangle, maxPointsInTrack int) *Blobie {
 		isStillBeingTracked: true,
 		noMatchTimes:        0,
 
+		classID:     classID,
+		className:   className,
 		crossedLine: false,
 	}
 }
@@ -70,8 +75,26 @@ func NewBlobieDefaults(rect image.Rectangle) *Blobie {
 		isStillBeingTracked: true,
 		noMatchTimes:        0,
 
+		classID:     -1,
+		className:   "No class",
 		crossedLine: false,
 	}
+}
+
+// SetClass - Set class information (eg. classID=1, className=vehicle)
+func (b *Blobie) SetClass(classID int, className string) {
+	b.SetClassID(classID)
+	b.SetClassName(className)
+}
+
+// SetClassID - Set class identifier
+func (b *Blobie) SetClassID(classID int) {
+	b.classID = classID
+}
+
+// SetClassName - Set class name
+func (b *Blobie) SetClassName(className string) {
+	b.className = className
 }
 
 // Update - Update info about blob
