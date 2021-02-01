@@ -168,8 +168,13 @@ func (b *Blobie) DrawTrack(mat *gocv.Mat, optionalText string) {
 		for i := range b.Track {
 			gocv.Circle(mat, b.Track[i], b.drawingOptions.CentroidColor.Radius, b.drawingOptions.CentroidColor.Color, b.drawingOptions.CentroidColor.Thickness)
 		}
-		pt := image.Pt(b.CurrentRect.Min.X, b.CurrentRect.Min.Y)
-		gocv.PutText(mat, optionalText, pt, gocv.FontHersheyPlain, b.drawingOptions.TextColor.Scale, b.drawingOptions.TextColor.Color, b.drawingOptions.TextColor.Thickness)
+		if optionalText != "" {
+			pt := image.Pt(b.CurrentRect.Min.X, b.CurrentRect.Min.Y)
+			textSize := gocv.GetTextSize(optionalText, b.drawingOptions.TextColor.Font, b.drawingOptions.TextColor.Scale, b.drawingOptions.TextColor.Thickness)
+			textRect := image.Rectangle{Min: image.Point{X: pt.X, Y: pt.Y - textSize.Y}, Max: image.Point{X: pt.X + textSize.X, Y: pt.Y}}
+			gocv.Rectangle(mat, textRect, b.drawingOptions.BBoxColor.Color, b.drawingOptions.BBoxColor.Thickness)
+			gocv.PutText(mat, optionalText, pt, b.drawingOptions.TextColor.Font, b.drawingOptions.TextColor.Scale, b.drawingOptions.TextColor.Color, b.drawingOptions.TextColor.Thickness)
+		}
 	}
 }
 
