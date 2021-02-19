@@ -42,7 +42,7 @@ tmp_blobs = append(tmp_blobs, new_blob2)
 // 4. Compare blobs ()
 global_blobs.MatchToExisting(tmp_blobs)
 
-// 5. Repeat 2-4 every time when you find new objects on images. MatchToExisting() will update existing blobs and register new ones.
+// 5. Repeat steps 2-4 every time when you find new objects on images. MatchToExisting() will update existing blobs and register new ones.
 ```
 
 ## Support
