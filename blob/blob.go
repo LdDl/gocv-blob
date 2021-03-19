@@ -3,6 +3,7 @@ package blob
 import (
 	"image"
 	"math"
+	"time"
 
 	uuid "github.com/satori/go.uuid"
 	"gocv.io/x/gocv"
@@ -17,6 +18,7 @@ type Blobie struct {
 	Diagonal              float64
 	AspectRatio           float64
 	Track                 []image.Point
+	TrackTime             []time.Time
 	maxPointsInTrack      int
 	isExists              bool
 	isStillBeingTracked   bool
@@ -43,6 +45,7 @@ func NewBlobie(rect image.Rectangle, maxPointsInTrack, classID int, className st
 		Diagonal:            math.Sqrt(math.Pow(width, 2) + math.Pow(height, 2)),
 		AspectRatio:         width / height,
 		Track:               []image.Point{center},
+		TrackTime:           []time.Time{time.Now()},
 		maxPointsInTrack:    maxPointsInTrack,
 		isExists:            true,
 		isStillBeingTracked: true,
@@ -70,6 +73,7 @@ func NewBlobieDefaults(rect image.Rectangle) *Blobie {
 		Diagonal:            math.Sqrt(math.Pow(width, 2) + math.Pow(height, 2)),
 		AspectRatio:         width / height,
 		Track:               []image.Point{center},
+		TrackTime:           []time.Time{time.Now()},
 		maxPointsInTrack:    10,
 		isExists:            true,
 		isStillBeingTracked: true,
@@ -128,6 +132,7 @@ func (b *Blobie) Update(newb Blobie) {
 	b.isExists = true
 	// Append new point to track
 	b.Track = append(b.Track, newb.Center)
+	b.TrackTime = append(b.TrackTime, newb.TrackTime[len(newb.TrackTime)-1])
 	// Restrict number of points in track (shift to the left)
 	if len(b.Track) > b.maxPointsInTrack {
 		b.Track = b.Track[1:]
