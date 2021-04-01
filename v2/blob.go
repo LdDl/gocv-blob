@@ -6,7 +6,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-type Blob interface {
+type Blobie interface {
 	GetCenter() image.Point
 	GetPredictedNextPosition() image.Point
 	GetDiagonal() float64
@@ -17,5 +17,5 @@ type Blob interface {
 	SetTracking(isStillBeingTracked bool)
 	SetID(id uuid.UUID)
 	PredictNextPosition(n int)
-	Update(newb Blob) error
+	Update(newb Blobie) error
 }

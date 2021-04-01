@@ -8,7 +8,7 @@ import (
 
 // Blobies - Array of blobs
 type Blobies struct {
-	Objects              map[uuid.UUID]Blob
+	Objects              map[uuid.UUID]Blobie
 	maxNoMatch           int
 	minThresholdDistance float64
 	maxPointsInTrack     int
@@ -25,7 +25,7 @@ type Blobies struct {
 //
 func NewBlobiesDefaults() *Blobies {
 	return &Blobies{
-		Objects:              make(map[uuid.UUID]Blob),
+		Objects:              make(map[uuid.UUID]Blobie),
 		maxNoMatch:           5,
 		minThresholdDistance: 15,
 		maxPointsInTrack:     10,
@@ -34,7 +34,7 @@ func NewBlobiesDefaults() *Blobies {
 }
 
 // MatchToExisting Check if some of blobs already exists
-func (bt *Blobies) MatchToExisting(blobies []Blob) {
+func (bt *Blobies) MatchToExisting(blobies []Blobie) {
 	bt.prepare()
 	for i := range blobies {
 		minUUID := uuid.UUID{}
@@ -78,7 +78,7 @@ func (bt *Blobies) prepare() {
 }
 
 // Register - Register new blob
-func (bt *Blobies) Register(b Blob) error {
+func (bt *Blobies) Register(b Blobie) error {
 	newUUID := uuid.NewV4()
 	b.SetID(newUUID)
 	bt.Objects[newUUID] = b

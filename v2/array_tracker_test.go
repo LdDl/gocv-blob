@@ -27,7 +27,7 @@ func TestArrayTracker(t *testing.T) {
 		blobOne := NewSimpleBlobie(rectOne, maxPointsInTrack, classID, className)
 		blobTwo := NewSimpleBlobie(rectTwo, maxPointsInTrack, classID, className)
 		blobThree := NewSimpleBlobie(rectThree, maxPointsInTrack, classID, className)
-		currentFrameBlobies := []Blob{blobOne, blobTwo, blobThree}
+		currentFrameBlobies := []Blobie{blobOne, blobTwo, blobThree}
 		allblobies.MatchToExisting(currentFrameBlobies)
 
 		if correctOverallBlobies != len(allblobies.Objects) {

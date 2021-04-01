@@ -71,7 +71,7 @@ func (sb *SimpleBlobie) SetExists(isExists bool) {
 }
 
 // NewSimpleBlobie - Constructor for SimpleBlobie (default values)
-func NewSimpleBlobie(rect image.Rectangle, maxPointsInTrack, classID int, className string) Blob {
+func NewSimpleBlobie(rect image.Rectangle, maxPointsInTrack, classID int, className string) Blobie {
 	center := image.Pt((rect.Min.X*2+rect.Dx())/2, (rect.Min.Y*2+rect.Dy())/2)
 	width := float64(rect.Dx())
 	height := float64(rect.Dy())
@@ -159,7 +159,7 @@ func (b *SimpleBlobie) GetDraw() *DrawOptions {
 }
 
 // Update - Update info about blob
-func (b *SimpleBlobie) Update(newb Blob) error {
+func (b *SimpleBlobie) Update(newb Blobie) error {
 	var newbCast *SimpleBlobie
 	switch newb.(type) {
 	case *SimpleBlobie:
