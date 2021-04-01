@@ -8,7 +8,7 @@ import (
 
 // Blobies - Array of blobs
 type Blobies struct {
-	Objects              map[uuid.UUID]*Blobie
+	Objects              map[uuid.UUID]Blob
 	maxNoMatch           int
 	minThresholdDistance float64
 	maxPointsInTrack     int
@@ -25,7 +25,7 @@ type Blobies struct {
 //
 func NewBlobiesDefaults() *Blobies {
 	return &Blobies{
-		Objects:              make(map[uuid.UUID]*Blobie),
+		Objects:              make(map[uuid.UUID]Blob),
 		maxNoMatch:           5,
 		minThresholdDistance: 15,
 		maxPointsInTrack:     10,
@@ -34,22 +34,22 @@ func NewBlobiesDefaults() *Blobies {
 }
 
 // MatchToExisting Check if some of blobs already exists
-func (bt *Blobies) MatchToExisting(blobies []*Blobie) {
+func (bt *Blobies) MatchToExisting(blobies []Blob) {
 	bt.prepare()
 	for i := range blobies {
 		minUUID := uuid.UUID{}
 		minDistance := math.MaxFloat64
 		for j := range (*bt).Objects {
-			dist := distanceBetweenPoints(blobies[i].Center, (*bt).Objects[j].Center)
-			distPredicted := distanceBetweenPoints(blobies[i].Center, (*bt).Objects[j].PredictedNextPosition)
+			dist := distanceBetweenPoints(blobies[i].GetCenter(), (*bt).Objects[j].GetCenter())
+			distPredicted := distanceBetweenPoints(blobies[i].GetCenter(), (*bt).Objects[j].GetPredictedNextPosition())
 			dist = minf64(dist, distPredicted)
 			if dist < minDistance {
 				minDistance = dist
 				minUUID = j
 			}
 		}
-		if minDistance < blobies[i].Diagonal*0.5 || minDistance < bt.minThresholdDistance {
-			bt.Objects[minUUID].Update(*blobies[i])
+		if minDistance < blobies[i].GetDiagonal()*0.5 || minDistance < bt.minThresholdDistance {
+			bt.Objects[minUUID].Update(blobies[i])
 		} else {
 			bt.Register(blobies[i])
 		}
@@ -60,11 +60,11 @@ func (bt *Blobies) MatchToExisting(blobies []*Blobie) {
 // RefreshNoMatch - Refresh state of each blob
 func (bt *Blobies) RefreshNoMatch() {
 	for i, b := range (*bt).Objects {
-		if b.isExists == false {
-			b.noMatchTimes++
+		if b.Exists() == false {
+			b.IncrementNoMatchTimes()
 		}
-		if b.noMatchTimes >= 5 {
-			b.isStillBeingTracked = false
+		if b.NoMatchTimes() >= 5 {
+			b.SetTracking(false)
 			bt.deregister(i)
 		}
 	}
@@ -72,15 +72,15 @@ func (bt *Blobies) RefreshNoMatch() {
 
 func (bt *Blobies) prepare() {
 	for i := range bt.Objects {
-		bt.Objects[i].isExists = false
+		bt.Objects[i].SetExists(false)
 		bt.Objects[i].PredictNextPosition(bt.maxNoMatch)
 	}
 }
 
 // Register - Register new blob
-func (bt *Blobies) Register(b *Blobie) error {
+func (bt *Blobies) Register(b Blob) error {
 	newUUID := uuid.NewV4()
-	b.ID = newUUID
+	b.SetID(newUUID)
 	bt.Objects[newUUID] = b
 	return nil
 }
@@ -91,7 +91,7 @@ func (bt *Blobies) deregister(guid uuid.UUID) {
 }
 
 // IsCrossedTheLine - Check if blob crossed the HORIZONTAL line
-func (b *Blobie) IsCrossedTheLine(vertical, leftX, rightX int, direction bool) bool {
+func (b *SimpleBlobie) IsCrossedTheLine(vertical, leftX, rightX int, direction bool) bool {
 	trackLen := len(b.Track)
 	if b.isStillBeingTracked == true && trackLen >= 2 && b.crossedLine == false {
 		prevFrame := trackLen - 2
@@ -116,7 +116,7 @@ func (b *Blobie) IsCrossedTheLine(vertical, leftX, rightX int, direction bool) b
 
 // IsCrossedTheLineWithShift - Check if blob crossed the HORIZONTAL line with shift along the Y-axis
 // Purpose of this for "predicative" cropping when detection line very close to bottom of image
-func (b *Blobie) IsCrossedTheLineWithShift(vertical, leftX, rightX int, direction bool, shift int) bool {
+func (b *SimpleBlobie) IsCrossedTheLineWithShift(vertical, leftX, rightX int, direction bool, shift int) bool {
 	trackLen := len(b.Track)
 	if b.isStillBeingTracked == true && trackLen >= 2 && b.crossedLine == false {
 		prevFrame := trackLen - 2

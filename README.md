@@ -31,11 +31,11 @@ It's pretty straightforward (pseudocode'ish)
 global_blobs = blob.NewBlobiesDefaults()
 
 // 2. Define new blob objects
-new_blob1 = blob.NewBlobie(image.Rectangle, how many points to store in track, class ID of object , class name of object)
-new_blob2 = blob.NewBlobie(image.Rectangle, how many points to store in track, class ID of object , class name of object)
+new_blob1 = blob.NewSimpleBlobie(image.Rectangle, how many points to store in track, class ID of object , class name of object)
+new_blob2 = blob.NewSimpleBlobie(image.Rectangle, how many points to store in track, class ID of object , class name of object)
 
 // 3. Append data to temporary set of blobs
-tmp_blobs = []*blob.Blobie{}
+tmp_blobs = []*blob.SimpleBlobie{}
 tmp_blobs = append(tmp_blobs, new_blob1)
 tmp_blobs = append(tmp_blobs, new_blob2)
 

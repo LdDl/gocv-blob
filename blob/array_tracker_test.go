@@ -24,13 +24,13 @@ func TestArrayTracker(t *testing.T) {
 		rectTwo := image.Rect(centerTwo[0]-rectHalfWidth, centerTwo[1]-rectHalfHeight, centerTwo[0]+rectHalfWidth, centerTwo[1]+rectHalfHeight)
 		rectThree := image.Rect(centerThree[0]-rectHalfWidth, centerThree[1]-rectHalfHeight, centerThree[0]+rectHalfWidth, centerThree[1]+rectHalfHeight)
 
-		blobOne := NewBlobie(rectOne, maxPointsInTrack, classID, className)
-		blobTwo := NewBlobie(rectTwo, maxPointsInTrack, classID, className)
-		blobThree := NewBlobie(rectThree, maxPointsInTrack, classID, className)
-		currentFrameBlobies := []*Blobie{blobOne, blobTwo, blobThree}
+		blobOne := NewSimpleBlobie(rectOne, maxPointsInTrack, classID, className)
+		blobTwo := NewSimpleBlobie(rectTwo, maxPointsInTrack, classID, className)
+		blobThree := NewSimpleBlobie(rectThree, maxPointsInTrack, classID, className)
+		currentFrameBlobies := []Blob{blobOne, blobTwo, blobThree}
 		allblobies.MatchToExisting(currentFrameBlobies)
 
-		if correctOverallBlobies != len(allblobies.Objects){
+		if correctOverallBlobies != len(allblobies.Objects) {
 			t.Errorf("Total number of blobs on frame %d should be %d, bot got %d", i, correctOverallBlobies, len(allblobies.Objects))
 		}
 	}
