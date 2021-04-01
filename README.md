@@ -34,13 +34,11 @@ It's pretty straightforward (pseudocode'ish).
 global_blobs = blob.NewBlobiesDefaults()
 
 // 2. Define new blob objects
-new_blob1 = blob.NewBlobie(image.Rectangle, how many points to store in track, class ID of object , class name of object)
-new_blob2 = blob.NewBlobie(image.Rectangle, how many points to store in track, class ID of object , class name of object)
+new_blob1 = blob.NewSimpleBlobie(image.Rectangle, how many points to store in track, class ID of object , class name of object)
+new_blob2 = blob.NewSimpleBlobie(image.Rectangle, how many points to store in track, class ID of object , class name of object)
 
 // 3. Append data to temporary set of blobs
-tmp_blobs = []*blob.Blobie{}
-tmp_blobs = append(tmp_blobs, new_blob1)
-tmp_blobs = append(tmp_blobs, new_blob2)
+tmp_blobs = []*blob.Blobie{new_blob1, new_blob2}
 
 // 4. Compare blobs ()
 global_blobs.MatchToExisting(tmp_blobs)
@@ -52,16 +50,20 @@ More informative example is here: [v2/array_tracker_test.go](v2/array_tracker_te
 
 **FOR LEGACY v1**:
 <details>
+<summary>Click to expand</summary>
+
 ```go
 // 1. Define global set of blobs
 global_blobs = blob.NewBlobiesDefaults()
 
 // 2. Define new blob objects
-new_blob1 = blob.NewSimpleBlobie(image.Rectangle, how many points to store in track, class ID of object , class name of object)
-new_blob2 = blob.NewSimpleBlobie(image.Rectangle, how many points to store in track, class ID of object , class name of object)
+new_blob1 = blob.NewBlobie(image.Rectangle, how many points to store in track, class ID of object , class name of object)
+new_blob2 = blob.NewBlobie(image.Rectangle, how many points to store in track, class ID of object , class name of object)
 
 // 3. Append data to temporary set of blobs
-tmp_blobs = []*blob.Blobie{new_blob1, new_blob2}
+tmp_blobs = []*blob.Blobie{}
+tmp_blobs = append(tmp_blobs, new_blob1)
+tmp_blobs = append(tmp_blobs, new_blob2)
 
 // 4. Compare blobs ()
 global_blobs.MatchToExisting(tmp_blobs)
