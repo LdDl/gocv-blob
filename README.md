@@ -4,7 +4,7 @@ Blob tracking via GoCV package
 ## Table of Contents
 
 - [About](#about)
-- [Installation](#usage)
+- [Installation](#installation)
 - [Usage](#usage)
 - [Support](#support)
 - [Thanks](#thanks)

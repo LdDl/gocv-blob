@@ -10,7 +10,7 @@ import (
 	"gocv.io/x/gocv"
 )
 
-// SimpleBlobie - Main blob structure
+// SimpleBlobie Simplest blob implementation
 type SimpleBlobie struct {
 	ID                    uuid.UUID
 	CurrentRect           image.Rectangle
