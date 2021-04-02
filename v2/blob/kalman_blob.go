@@ -119,7 +119,7 @@ func (b *KalmanBlobie) Update(newb Blobie) error {
 	b.uMatrix.Set(3, 0, 0.0)
 
 	// Evaluate state
-	state, err := b.pointTracker.Process(b.yMatrix, b.uMatrix)
+	state, err := b.pointTracker.Process(b.uMatrix, b.yMatrix)
 	if err != nil {
 		return errors.Wrap(err, "Can't process linear Kalman filter")
 	}
