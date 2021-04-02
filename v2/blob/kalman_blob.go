@@ -146,6 +146,10 @@ func (sb *KalmanBlobie) GetCenter() image.Point {
 	return sb.Center
 }
 
+func (sb *KalmanBlobie) GetCurrentRect() image.Rectange {
+	return sb.CurrentRect
+}
+
 func (sb *KalmanBlobie) GetDiagonal() float64 {
 	return sb.Diagonal
 }
@@ -176,4 +180,39 @@ func (sb *KalmanBlobie) IncrementNoMatchTimes() {
 
 func (sb *KalmanBlobie) SetExists(isExists bool) {
 	sb.isExists = isExists
+}
+
+// GetClassID Returns class identifier [KalmanBlobie]
+func (b *KalmanBlobie) GetClassID() int {
+	return b.classID
+}
+
+// GetClassName Returns class name [KalmanBlobie]
+func (b *KalmanBlobie) GetClassName() string {
+	return b.className
+}
+
+// SetDraw Sets options for drawing [KalmanBlobie]
+func (b *KalmanBlobie) SetDraw(drawOptions *DrawOptions) {
+	b.drawingOptions = drawOptions
+}
+
+// DrawTrack Draws blob's track [KalmanBlobie]
+func (b *KalmanBlobie) DrawTrack(mat *gocv.Mat, optionalText string) {
+	if b.drawingOptions == nil {
+		b.drawingOptions = NewDrawOptionsDefault()
+	}
+	gocv.Rectangle(mat, b.CurrentRect, b.drawingOptions.BBoxColor.Color, b.drawingOptions.BBoxColor.Thickness)
+	if b.isStillBeingTracked {
+		for i := range b.Track {
+			gocv.Circle(mat, b.Track[i], b.drawingOptions.CentroidColor.Radius, b.drawingOptions.CentroidColor.Color, b.drawingOptions.CentroidColor.Thickness)
+		}
+		if optionalText != "" {
+			pt := image.Pt(b.CurrentRect.Min.X, b.CurrentRect.Min.Y)
+			textSize := gocv.GetTextSize(optionalText, b.drawingOptions.TextColor.Font, b.drawingOptions.TextColor.Scale, b.drawingOptions.TextColor.Thickness)
+			textRect := image.Rectangle{Min: image.Point{X: pt.X, Y: pt.Y - textSize.Y}, Max: image.Point{X: pt.X + textSize.X, Y: pt.Y}}
+			gocv.Rectangle(mat, textRect, b.drawingOptions.BBoxColor.Color, b.drawingOptions.BBoxColor.Thickness)
+			gocv.PutText(mat, optionalText, pt, b.drawingOptions.TextColor.Font, b.drawingOptions.TextColor.Scale, b.drawingOptions.TextColor.Color, b.drawingOptions.TextColor.Thickness)
+		}
+	}
 }

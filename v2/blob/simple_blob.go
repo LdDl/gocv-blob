@@ -38,6 +38,10 @@ func (sb *SimpleBlobie) GetCenter() image.Point {
 	return sb.Center
 }
 
+func (sb *SimpleBlobie) GetCurrentRect() image.Rectange {
+	return sb.CurrentRect
+}
+
 func (sb *SimpleBlobie) GetDiagonal() float64 {
 	return sb.Diagonal
 }
@@ -138,17 +142,17 @@ func (b *SimpleBlobie) SetClassName(className string) {
 	b.className = className
 }
 
-// GetClassID - Return class identifier
+// GetClassID Returns class identifier [SimpleBlobie]
 func (b *SimpleBlobie) GetClassID() int {
 	return b.classID
 }
 
-// GetClassName - Return class name
+// GetClassName Returns class name [SimpleBlobie]
 func (b *SimpleBlobie) GetClassName() string {
 	return b.className
 }
 
-// SetDraw - Set options for drawing
+// SetDraw Sets options for drawing [SimpleBlobie]
 func (b *SimpleBlobie) SetDraw(drawOptions *DrawOptions) {
 	b.drawingOptions = drawOptions
 }
@@ -209,7 +213,7 @@ func (b *SimpleBlobie) PredictNextPosition(n int) {
 	(*b).PredictedNextPosition.Y = (*b).Track[len((*b).Track)-1].Y + deltaY
 }
 
-// DrawTrack - Draw blob's track
+// DrawTrack Draws blob's track [SimpleBlobie]
 func (b *SimpleBlobie) DrawTrack(mat *gocv.Mat, optionalText string) {
 	if b.drawingOptions == nil {
 		b.drawingOptions = NewDrawOptionsDefault()
