@@ -147,7 +147,7 @@ func (sb *KalmanBlobie) GetCenter() image.Point {
 	return sb.Center
 }
 
-func (sb *KalmanBlobie) GetCurrentRect() image.Rectange {
+func (sb *KalmanBlobie) GetCurrentRect() image.Rectangle {
 	return sb.CurrentRect
 }
 
