@@ -38,7 +38,7 @@ func (sb *SimpleBlobie) GetCenter() image.Point {
 	return sb.Center
 }
 
-func (sb *SimpleBlobie) GetCurrentRect() image.Rectange {
+func (sb *SimpleBlobie) GetCurrentRect() image.Rectangle {
 	return sb.CurrentRect
 }
 
