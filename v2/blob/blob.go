@@ -24,4 +24,6 @@ type Blobie interface {
 	Update(newb Blobie) error
 	SetDraw(drawOptions *DrawOptions)
 	DrawTrack(mat *gocv.Mat, optionalText string)
+	IsCrossedTheLine(vertical, leftX, rightX int, direction bool) bool
+	IsCrossedTheLineWithShift(vertical, leftX, rightX int, direction bool, shift int) bool
 }
