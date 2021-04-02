@@ -11,6 +11,7 @@ import (
 	"gonum.org/v1/gonum/mat"
 
 	uuid "github.com/satori/go.uuid"
+	"gocv.io/x/gocv"
 )
 
 // KalmanBlobie Blob implementation based on Kalman filter.

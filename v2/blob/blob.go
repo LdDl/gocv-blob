@@ -4,11 +4,12 @@ import (
 	"image"
 
 	uuid "github.com/satori/go.uuid"
+	"gocv.io/x/gocv"
 )
 
 type Blobie interface {
 	GetCenter() image.Point
-	GetCurrentRect() image.Rectange
+	GetCurrentRect() image.Rectangle
 	GetPredictedNextPosition() image.Point
 	GetDiagonal() float64
 	GetClassID() int
