@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestArrayTracker(t *testing.T) {
+func TestSimpleArrayTracker(t *testing.T) {
 	maxPointsInTrack := 150
 	classID := 1
 	className := "just_an_object"
