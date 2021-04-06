@@ -15,6 +15,11 @@ func TestSimpleArrayTracker(t *testing.T) {
 	rectHalfWidth := 75
 
 	correctOverallBlobies := 3
+	commonOptions := BlobOptions{
+		ClassID:          classID,
+		ClassName:        className,
+		MaxPointsInTrack: maxPointsInTrack,
+	}
 	for i := range objectOne {
 		centerOne := objectOne[i]
 		centerTwo := objectTwo[i]
@@ -24,14 +29,51 @@ func TestSimpleArrayTracker(t *testing.T) {
 		rectTwo := image.Rect(centerTwo[0]-rectHalfWidth, centerTwo[1]-rectHalfHeight, centerTwo[0]+rectHalfWidth, centerTwo[1]+rectHalfHeight)
 		rectThree := image.Rect(centerThree[0]-rectHalfWidth, centerThree[1]-rectHalfHeight, centerThree[0]+rectHalfWidth, centerThree[1]+rectHalfHeight)
 
-		blobOne := NewSimpleBlobie(rectOne, maxPointsInTrack, classID, className)
-		blobTwo := NewSimpleBlobie(rectTwo, maxPointsInTrack, classID, className)
-		blobThree := NewSimpleBlobie(rectThree, maxPointsInTrack, classID, className)
+		blobOne := NewSimpleBlobie(rectOne, &commonOptions)
+		blobTwo := NewSimpleBlobie(rectTwo, &commonOptions)
+		blobThree := NewSimpleBlobie(rectThree, &commonOptions)
 		currentFrameBlobies := []Blobie{blobOne, blobTwo, blobThree}
 		allblobies.MatchToExisting(currentFrameBlobies)
 
 		if correctOverallBlobies != len(allblobies.Objects) {
-			t.Errorf("Total number of blobs on frame %d should be %d, bot got %d", i, correctOverallBlobies, len(allblobies.Objects))
+			t.Errorf("[Simple] Total number of blobs on frame %d should be %d, bot got %d", i, correctOverallBlobies, len(allblobies.Objects))
+		}
+	}
+}
+
+func TestKalmanArrayTracker(t *testing.T) {
+	maxPointsInTrack := 150
+	classID := 1
+	className := "just_an_object"
+	allblobies := NewBlobiesDefaults()
+
+	rectHalfHeight := 30
+	rectHalfWidth := 75
+
+	correctOverallBlobies := 3
+	commonOptions := BlobOptions{
+		ClassID:          classID,
+		ClassName:        className,
+		MaxPointsInTrack: maxPointsInTrack,
+		TimeDeltaSeconds: 1.0,
+	}
+	for i := range objectOne {
+		centerOne := objectOne[i]
+		centerTwo := objectTwo[i]
+		centerThree := objectThree[i]
+
+		rectOne := image.Rect(centerOne[0]-rectHalfWidth, centerOne[1]-rectHalfHeight, centerOne[0]+rectHalfWidth, centerOne[1]+rectHalfHeight)
+		rectTwo := image.Rect(centerTwo[0]-rectHalfWidth, centerTwo[1]-rectHalfHeight, centerTwo[0]+rectHalfWidth, centerTwo[1]+rectHalfHeight)
+		rectThree := image.Rect(centerThree[0]-rectHalfWidth, centerThree[1]-rectHalfHeight, centerThree[0]+rectHalfWidth, centerThree[1]+rectHalfHeight)
+
+		blobOne := NewKalmanBlobie(rectOne, &commonOptions)
+		blobTwo := NewKalmanBlobie(rectTwo, &commonOptions)
+		blobThree := NewKalmanBlobie(rectThree, &commonOptions)
+		currentFrameBlobies := []Blobie{blobOne, blobTwo, blobThree}
+		allblobies.MatchToExisting(currentFrameBlobies)
+
+		if correctOverallBlobies != len(allblobies.Objects) {
+			t.Errorf("[Kalman] Total number of blobs on frame %d should be %d, bot got %d", i, correctOverallBlobies, len(allblobies.Objects))
 		}
 	}
 }

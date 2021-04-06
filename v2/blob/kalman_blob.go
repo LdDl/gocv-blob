@@ -46,7 +46,7 @@ type KalmanBlobie struct {
 }
 
 // NewKalmanBlobie - Constructor for KalmanBlobie (default values)
-func NewKalmanBlobie(rect image.Rectangle, maxPointsInTrack int, dT float64, classID int, className string) Blobie {
+func NewKalmanBlobie(rect image.Rectangle, options *BlobOptions) Blobie {
 	center := image.Pt((rect.Min.X*2+rect.Dx())/2, (rect.Min.Y*2+rect.Dy())/2)
 	width := float64(rect.Dx())
 	height := float64(rect.Dy())
@@ -58,22 +58,30 @@ func NewKalmanBlobie(rect image.Rectangle, maxPointsInTrack int, dT float64, cla
 		Diagonal:            math.Sqrt(math.Pow(width, 2) + math.Pow(height, 2)),
 		AspectRatio:         width / height,
 		Track:               []image.Point{center},
-		TrackTime:           []time.Time{time.Now()},
-		maxPointsInTrack:    maxPointsInTrack,
 		isExists:            true,
 		isStillBeingTracked: true,
 		noMatchTimes:        0,
 		pointTracker:        kf.NewPointTracker(),
 		yMatrix:             mat.NewDense(2, 1, []float64{centerX, centerY}),
 		uMatrix:             mat.NewDense(4, 1, []float64{0.0, 0.0, 0.0, 0.0}),
-		dt:                  dT,
-		classID:             classID,
-		className:           className,
 		crossedLine:         false,
 	}
 	kalmanBlobie.pointTracker.SetStateValue(centerX, centerY, 0, 0)
-	kalmanBlobie.pointTracker.SetTime(dT)
-
+	if options != nil {
+		kalmanBlobie.TrackTime = []time.Time{options.Time}
+		kalmanBlobie.maxPointsInTrack = options.MaxPointsInTrack
+		kalmanBlobie.classID = options.ClassID
+		kalmanBlobie.className = options.ClassName
+		kalmanBlobie.dt = options.TimeDeltaSeconds
+		kalmanBlobie.pointTracker.SetTime(options.TimeDeltaSeconds)
+	} else {
+		kalmanBlobie.TrackTime = []time.Time{time.Now()}
+		kalmanBlobie.maxPointsInTrack = 10
+		kalmanBlobie.classID = -1
+		kalmanBlobie.className = "No class"
+		kalmanBlobie.dt = 1.0
+		kalmanBlobie.pointTracker.SetTime(1.0)
+	}
 	return &kalmanBlobie
 }
 
@@ -143,12 +151,20 @@ func (b *KalmanBlobie) Update(newb Blobie) error {
 	return nil
 }
 
+func (sb *KalmanBlobie) GetID() uuid.UUID {
+	return sb.ID
+}
+
 func (sb *KalmanBlobie) GetCenter() image.Point {
 	return sb.Center
 }
 
 func (sb *KalmanBlobie) GetCurrentRect() image.Rectangle {
 	return sb.CurrentRect
+}
+
+func (sb *KalmanBlobie) GetTrack() []image.Point {
+	return sb.Track
 }
 
 func (sb *KalmanBlobie) GetDiagonal() float64 {

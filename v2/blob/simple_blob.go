@@ -34,12 +34,20 @@ type SimpleBlobie struct {
 	crossedLine    bool
 }
 
+func (sb *SimpleBlobie) GetID() uuid.UUID {
+	return sb.ID
+}
+
 func (sb *SimpleBlobie) GetCenter() image.Point {
 	return sb.Center
 }
 
 func (sb *SimpleBlobie) GetCurrentRect() image.Rectangle {
 	return sb.CurrentRect
+}
+
+func (sb *SimpleBlobie) GetTrack() []image.Point {
+	return sb.Track
 }
 
 func (sb *SimpleBlobie) GetDiagonal() float64 {
@@ -75,27 +83,34 @@ func (sb *SimpleBlobie) SetExists(isExists bool) {
 }
 
 // NewSimpleBlobie - Constructor for SimpleBlobie (default values)
-func NewSimpleBlobie(rect image.Rectangle, maxPointsInTrack, classID int, className string) Blobie {
+func NewSimpleBlobie(rect image.Rectangle, options *BlobOptions) Blobie {
 	center := image.Pt((rect.Min.X*2+rect.Dx())/2, (rect.Min.Y*2+rect.Dy())/2)
 	width := float64(rect.Dx())
 	height := float64(rect.Dy())
-	return &SimpleBlobie{
+	blobie := SimpleBlobie{
 		CurrentRect:         rect,
 		Center:              center,
 		Area:                width * height,
 		Diagonal:            math.Sqrt(math.Pow(width, 2) + math.Pow(height, 2)),
 		AspectRatio:         width / height,
 		Track:               []image.Point{center},
-		TrackTime:           []time.Time{time.Now()},
-		maxPointsInTrack:    maxPointsInTrack,
 		isExists:            true,
 		isStillBeingTracked: true,
 		noMatchTimes:        0,
-
-		classID:     classID,
-		className:   className,
-		crossedLine: false,
+		crossedLine:         false,
 	}
+	if options != nil {
+		blobie.TrackTime = []time.Time{options.Time}
+		blobie.maxPointsInTrack = options.MaxPointsInTrack
+		blobie.classID = options.ClassID
+		blobie.className = options.ClassName
+	} else {
+		blobie.TrackTime = []time.Time{time.Now()}
+		blobie.maxPointsInTrack = 10
+		blobie.classID = -1
+		blobie.className = "No class"
+	}
+	return &blobie
 }
 
 // NewBlobieDefaults - Constructor for SimpleBlobie (default values)

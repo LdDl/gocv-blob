@@ -8,9 +8,11 @@ import (
 )
 
 type Blobie interface {
+	GetID() uuid.UUID
 	GetCenter() image.Point
 	GetCurrentRect() image.Rectangle
 	GetPredictedNextPosition() image.Point
+	GetTrack() []image.Point
 	GetDiagonal() float64
 	GetClassID() int
 	GetClassName() string
