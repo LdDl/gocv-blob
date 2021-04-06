@@ -10,7 +10,9 @@ Blob tracking via GoCV package
 - [Thanks](#thanks)
 
 ## About
-This small package implements basics of blob tracking (see ref. https://github.com/MicrocontrollersAndMore/OpenCV_3_Car_Counting_Cpp/blob/master/Blob.cpp)
+This small package implements basics of blob tracking: simple centroid and [Kalman filter](https://en.wikipedia.org/wiki/Kalman_filter)-based tracking
+
+There are additional function for checking if blob crossed horizontal (or even oblique) line.
 
 ## Installation
 
