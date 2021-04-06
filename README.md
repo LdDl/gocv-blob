@@ -12,7 +12,7 @@ Blob tracking via GoCV package
 ## About
 This small package implements basics of blob tracking: simple centroid and [Kalman filter](https://en.wikipedia.org/wiki/Kalman_filter)-based tracking
 
-There are additional function for checking if blob crossed horizontal (or even oblique) line.
+There are additional functions for checking if blob crossed horizontal (or even oblique) line.
 
 ## Installation
 
