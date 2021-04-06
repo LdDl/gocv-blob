@@ -167,6 +167,10 @@ func (sb *KalmanBlobie) GetTrack() []image.Point {
 	return sb.Track
 }
 
+func (sb *KalmanBlobie) GetTimestamps() []time.Time {
+	return sb.TrackTime
+}
+
 func (sb *KalmanBlobie) GetDiagonal() float64 {
 	return sb.Diagonal
 }

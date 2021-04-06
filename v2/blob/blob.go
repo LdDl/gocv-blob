@@ -2,6 +2,7 @@ package blob
 
 import (
 	"image"
+	"time"
 
 	uuid "github.com/satori/go.uuid"
 	"gocv.io/x/gocv"
@@ -13,6 +14,7 @@ type Blobie interface {
 	GetCurrentRect() image.Rectangle
 	GetPredictedNextPosition() image.Point
 	GetTrack() []image.Point
+	GetTimestamps() []time.Time
 	GetDiagonal() float64
 	GetClassID() int
 	GetClassName() string

@@ -50,6 +50,10 @@ func (sb *SimpleBlobie) GetTrack() []image.Point {
 	return sb.Track
 }
 
+func (sb *SimpleBlobie) GetTimestamps() []time.Time {
+	return sb.TrackTime
+}
+
 func (sb *SimpleBlobie) GetDiagonal() float64 {
 	return sb.Diagonal
 }
