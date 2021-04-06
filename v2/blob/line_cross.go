@@ -131,7 +131,7 @@ func (b *SimpleBlobie) IsCrossedTheLineWithShift(vertical, leftX, rightX int, di
 }
 
 // IsCrossedTheObliqueLine - Check if blob crossed the OBLIQUE line
-// This should be used when lineStart.Y != lineEnd.Y or lineStart.X != lineEnd.X
+// This should be used when lineStart.Y != lineEnd.Y
 func (b *SimpleBlobie) IsCrossedTheObliqueLine(leftX, leftY, rightX, rightY int, direction bool) bool {
 	trackLen := len(b.Track)
 	if b.isStillBeingTracked == true && trackLen >= 2 && b.crossedLine == false {
@@ -157,7 +157,7 @@ func (b *SimpleBlobie) IsCrossedTheObliqueLine(leftX, leftY, rightX, rightY int,
 }
 
 // IsCrossedTheObliqueLine - Check if blob crossed the OBLIQUE line with shift along the Y-axis
-// This should be used when lineStart.Y != lineEnd.Y or lineStart.X != lineEnd.X
+// This should be used when lineStart.Y != lineEnd.Y
 // Purpose of shifting: for "predicative" cropping when detection line very close to bottom of image
 func (b *SimpleBlobie) IsCrossedTheObliqueLineWithShift(leftX, leftY, rightX, rightY int, direction bool, shift int) bool {
 	trackLen := len(b.Track)
@@ -232,7 +232,7 @@ func (b *KalmanBlobie) IsCrossedTheLineWithShift(vertical, leftX, rightX int, di
 }
 
 // IsCrossedTheObliqueLine - Check if blob crossed the OBLIQUE line
-// This should be used when lineStart.Y != lineEnd.Y or lineStart.X != lineEnd.X
+// This should be used when lineStart.Y != lineEnd.Y
 func (b *KalmanBlobie) IsCrossedTheObliqueLine(leftX, leftY, rightX, rightY int, direction bool) bool {
 	trackLen := len(b.Track)
 	if b.isStillBeingTracked == true && trackLen >= 2 && b.crossedLine == false {
@@ -259,7 +259,7 @@ func (b *KalmanBlobie) IsCrossedTheObliqueLine(leftX, leftY, rightX, rightY int,
 }
 
 // IsCrossedTheObliqueLine - Check if blob crossed the OBLIQUE line with shift along the Y-axis
-// This should be used when lineStart.Y != lineEnd.Y or lineStart.X != lineEnd.X
+// This should be used when lineStart.Y != lineEnd.Y
 // Purpose of shifting: for "predicative" cropping when detection line very close to bottom of image
 func (b *KalmanBlobie) IsCrossedTheObliqueLineWithShift(leftX, leftY, rightX, rightY int, direction bool, shift int) bool {
 	trackLen := len(b.Track)
