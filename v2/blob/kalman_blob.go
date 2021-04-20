@@ -142,7 +142,7 @@ func (b *KalmanBlobie) Update(newb Blobie) error {
 	b.isStillBeingTracked = true
 	b.isExists = true
 	// Append new point to track
-	b.Track = append(b.Track, newbCast.Center)
+	b.Track = append(b.Track, b.Center)
 	b.TrackTime = append(b.TrackTime, newbCast.TrackTime[len(newbCast.TrackTime)-1])
 	// Restrict number of points in track (shift to the left)
 	if len(b.Track) > b.maxPointsInTrack {
