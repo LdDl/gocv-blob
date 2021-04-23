@@ -217,15 +217,15 @@ func (b *SimpleBlobie) DrawTrack(mat *gocv.Mat, optionalText ...string) {
 			gocv.Circle(mat, b.Track[i], b.drawingOptions.CentroidColor.Radius, b.drawingOptions.CentroidColor.Color, b.drawingOptions.CentroidColor.Thickness)
 		}
 		shiftTextY := 0
-		for i := len(optionalText) - 1; i >= 0; i-- {
+		for i := 0; i < len(optionalText); i++ {
 			text := optionalText[i]
 			if text != "" {
-				anchor := image.Pt(b.CurrentRect.Min.X, b.CurrentRect.Min.Y-i*shiftTextY)
 				textSize := gocv.GetTextSize(text, b.drawingOptions.TextColor.Font, b.drawingOptions.TextColor.Scale, b.drawingOptions.TextColor.Thickness)
+				anchor := image.Pt(b.CurrentRect.Min.X, b.CurrentRect.Min.Y-shiftTextY-b.drawingOptions.BBoxColor.Thickness) // substract extra margin = Thickness of BBox
 				textRect := image.Rectangle{Min: image.Point{X: anchor.X, Y: anchor.Y - textSize.Y}, Max: image.Point{X: anchor.X + textSize.X, Y: anchor.Y}}
 				gocv.Rectangle(mat, textRect, b.drawingOptions.BBoxColor.Color, b.drawingOptions.BBoxColor.Thickness)
 				gocv.PutText(mat, text, anchor, b.drawingOptions.TextColor.Font, b.drawingOptions.TextColor.Scale, b.drawingOptions.TextColor.Color, b.drawingOptions.TextColor.Thickness)
-				shiftTextY = textSize.Y
+				shiftTextY += textSize.Y
 			}
 		}
 	}
