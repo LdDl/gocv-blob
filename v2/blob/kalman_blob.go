@@ -228,7 +228,7 @@ func (b *KalmanBlobie) DrawTrack(mat *gocv.Mat, optionalText ...string) {
 		for i := range b.Track {
 			gocv.Circle(mat, b.Track[i], b.drawingOptions.CentroidColor.Radius, b.drawingOptions.CentroidColor.Color, b.drawingOptions.CentroidColor.Thickness)
 		}
-		shiftTextY := 10
+		shiftTextY := 0
 		for i := len(optionalText) - 1; i >= 0; i-- {
 			text := optionalText[i]
 			if text != "" {
@@ -237,6 +237,7 @@ func (b *KalmanBlobie) DrawTrack(mat *gocv.Mat, optionalText ...string) {
 				textRect := image.Rectangle{Min: image.Point{X: anchor.X, Y: anchor.Y - textSize.Y}, Max: image.Point{X: anchor.X + textSize.X, Y: anchor.Y}}
 				gocv.Rectangle(mat, textRect, b.drawingOptions.BBoxColor.Color, b.drawingOptions.BBoxColor.Thickness)
 				gocv.PutText(mat, text, anchor, b.drawingOptions.TextColor.Font, b.drawingOptions.TextColor.Scale, b.drawingOptions.TextColor.Color, b.drawingOptions.TextColor.Thickness)
+				shiftTextY = textSize.Y
 			}
 		}
 	}
