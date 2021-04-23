@@ -18,6 +18,8 @@ type Blobie interface {
 	GetDiagonal() float64
 	GetClassID() int
 	GetClassName() string
+	GetPropetry(key string) (interface{}, bool)
+	SetPropetry(key string, value interface{})
 	Exists() bool
 	NoMatchTimes() int
 	IncrementNoMatchTimes()

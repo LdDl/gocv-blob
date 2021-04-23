@@ -31,8 +31,9 @@ type KalmanBlobie struct {
 	noMatchTimes          int
 	PredictedNextPosition image.Point
 
-	classID   int
-	className string
+	classID          int
+	className        string
+	customProperties map[string]interface{}
 
 	// Kalman filter wrapping
 	pointTracker *kf.PointTracker
@@ -211,6 +212,15 @@ func (b *KalmanBlobie) GetClassID() int {
 // GetClassName Returns class name [KalmanBlobie]
 func (b *KalmanBlobie) GetClassName() string {
 	return b.className
+}
+
+func (b *KalmanBlobie) GetPropetry(key string) (interface{}, bool) {
+	v, ok := b.customProperties[key]
+	return v, ok
+}
+
+func (b *KalmanBlobie) SetPropetry(key string, value interface{}) {
+	b.customProperties[key] = value
 }
 
 // SetDraw Sets options for drawing [KalmanBlobie]

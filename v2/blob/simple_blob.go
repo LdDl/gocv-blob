@@ -26,8 +26,9 @@ type SimpleBlobie struct {
 	noMatchTimes          int
 	PredictedNextPosition image.Point
 
-	classID   int
-	className string
+	classID          int
+	className        string
+	customProperties map[string]interface{}
 
 	// For array tracker
 	drawingOptions *DrawOptions
@@ -199,6 +200,15 @@ func (b *SimpleBlobie) GetClassID() int {
 // GetClassName Returns class name [SimpleBlobie]
 func (b *SimpleBlobie) GetClassName() string {
 	return b.className
+}
+
+func (b *SimpleBlobie) GetPropetry(key string) (interface{}, bool) {
+	v, ok := b.customProperties[key]
+	return v, ok
+}
+
+func (b *SimpleBlobie) SetPropetry(key string, value interface{}) {
+	b.customProperties[key] = value
 }
 
 // SetDraw Sets options for drawing [SimpleBlobie]
