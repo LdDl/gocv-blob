@@ -34,58 +34,6 @@ type SimpleBlobie struct {
 	crossedLine    bool
 }
 
-func (sb *SimpleBlobie) GetID() uuid.UUID {
-	return sb.ID
-}
-
-func (sb *SimpleBlobie) GetCenter() image.Point {
-	return sb.Center
-}
-
-func (sb *SimpleBlobie) GetCurrentRect() image.Rectangle {
-	return sb.CurrentRect
-}
-
-func (sb *SimpleBlobie) GetTrack() []image.Point {
-	return sb.Track
-}
-
-func (sb *SimpleBlobie) GetTimestamps() []time.Time {
-	return sb.TrackTime
-}
-
-func (sb *SimpleBlobie) GetDiagonal() float64 {
-	return sb.Diagonal
-}
-
-func (sb *SimpleBlobie) GetPredictedNextPosition() image.Point {
-	return sb.PredictedNextPosition
-}
-
-func (sb *SimpleBlobie) NoMatchTimes() int {
-	return sb.noMatchTimes
-}
-
-func (sb *SimpleBlobie) Exists() bool {
-	return sb.isExists
-}
-
-func (sb *SimpleBlobie) SetID(id uuid.UUID) {
-	sb.ID = id
-}
-
-func (sb *SimpleBlobie) SetTracking(isStillBeingTracked bool) {
-	sb.isStillBeingTracked = isStillBeingTracked
-}
-
-func (sb *SimpleBlobie) IncrementNoMatchTimes() {
-	sb.noMatchTimes++
-}
-
-func (sb *SimpleBlobie) SetExists(isExists bool) {
-	sb.isExists = isExists
-}
-
 // NewSimpleBlobie - Constructor for SimpleBlobie (default values)
 func NewSimpleBlobie(rect image.Rectangle, options *BlobOptions) Blobie {
 	center := image.Pt((rect.Min.X*2+rect.Dx())/2, (rect.Min.Y*2+rect.Dy())/2)
@@ -145,40 +93,23 @@ func NewBlobieDefaults(rect image.Rectangle) *SimpleBlobie {
 	}
 }
 
-// SetClass - Set class information (eg. classID=1, className=vehicle)
-func (b *SimpleBlobie) SetClass(classID int, className string) {
-	b.SetClassID(classID)
-	b.SetClassName(className)
-}
-
-// SetClassID - Set class identifier
-func (b *SimpleBlobie) SetClassID(classID int) {
-	b.classID = classID
-}
-
-// SetClassName - Set class name
-func (b *SimpleBlobie) SetClassName(className string) {
-	b.className = className
-}
-
-// GetClassID Returns class identifier [SimpleBlobie]
-func (b *SimpleBlobie) GetClassID() int {
-	return b.classID
-}
-
-// GetClassName Returns class name [SimpleBlobie]
-func (b *SimpleBlobie) GetClassName() string {
-	return b.className
-}
-
-// SetDraw Sets options for drawing [SimpleBlobie]
-func (b *SimpleBlobie) SetDraw(drawOptions *DrawOptions) {
-	b.drawingOptions = drawOptions
-}
-
-// GetDraw - Return options for drawing
-func (b *SimpleBlobie) GetDraw() *DrawOptions {
-	return b.drawingOptions
+// PredictNextPosition - Predict next N coordinates
+func (b *SimpleBlobie) PredictNextPosition(n int) {
+	account := min(n, len((*b).Track))
+	prev := len((*b).Track) - 1
+	current := prev - 1
+	var deltaX, deltaY, sum int = 0, 0, 0
+	for i := 1; i < int(account); i++ {
+		deltaX += (((*b).Track)[current].X - ((*b).Track)[prev].X) * i
+		deltaY += (((*b).Track)[current].Y - ((*b).Track)[prev].Y) * i
+		sum += i
+	}
+	if sum > 0 {
+		deltaX /= sum
+		deltaY /= sum
+	}
+	(*b).PredictedNextPosition.X = (*b).Track[len((*b).Track)-1].X + deltaX
+	(*b).PredictedNextPosition.Y = (*b).Track[len((*b).Track)-1].Y + deltaY
 }
 
 // Update - Update info about blob
@@ -208,28 +139,71 @@ func (b *SimpleBlobie) Update(newb Blobie) error {
 	return nil
 }
 
-// GetLastPoint - Return last point from blob's track
-func (b *SimpleBlobie) GetLastPoint() image.Point {
-	return b.Track[len(b.Track)-1]
+func (sb *SimpleBlobie) GetID() uuid.UUID {
+	return sb.ID
 }
 
-// PredictNextPosition - Predict next N coordinates
-func (b *SimpleBlobie) PredictNextPosition(n int) {
-	account := min(n, len((*b).Track))
-	prev := len((*b).Track) - 1
-	current := prev - 1
-	var deltaX, deltaY, sum int = 0, 0, 0
-	for i := 1; i < int(account); i++ {
-		deltaX += (((*b).Track)[current].X - ((*b).Track)[prev].X) * i
-		deltaY += (((*b).Track)[current].Y - ((*b).Track)[prev].Y) * i
-		sum += i
-	}
-	if sum > 0 {
-		deltaX /= sum
-		deltaY /= sum
-	}
-	(*b).PredictedNextPosition.X = (*b).Track[len((*b).Track)-1].X + deltaX
-	(*b).PredictedNextPosition.Y = (*b).Track[len((*b).Track)-1].Y + deltaY
+func (sb *SimpleBlobie) GetCenter() image.Point {
+	return sb.Center
+}
+
+func (sb *SimpleBlobie) GetCurrentRect() image.Rectangle {
+	return sb.CurrentRect
+}
+
+func (sb *SimpleBlobie) GetTrack() []image.Point {
+	return sb.Track
+}
+
+func (sb *SimpleBlobie) GetTimestamps() []time.Time {
+	return sb.TrackTime
+}
+
+func (sb *SimpleBlobie) GetDiagonal() float64 {
+	return sb.Diagonal
+}
+
+func (sb *SimpleBlobie) GetPredictedNextPosition() image.Point {
+	return sb.PredictedNextPosition
+}
+
+func (sb *SimpleBlobie) NoMatchTimes() int {
+	return sb.noMatchTimes
+}
+
+func (sb *SimpleBlobie) Exists() bool {
+	return sb.isExists
+}
+
+func (sb *SimpleBlobie) SetID(id uuid.UUID) {
+	sb.ID = id
+}
+
+func (sb *SimpleBlobie) SetTracking(isStillBeingTracked bool) {
+	sb.isStillBeingTracked = isStillBeingTracked
+}
+
+func (sb *SimpleBlobie) IncrementNoMatchTimes() {
+	sb.noMatchTimes++
+}
+
+func (sb *SimpleBlobie) SetExists(isExists bool) {
+	sb.isExists = isExists
+}
+
+// GetClassID Returns class identifier [SimpleBlobie]
+func (b *SimpleBlobie) GetClassID() int {
+	return b.classID
+}
+
+// GetClassName Returns class name [SimpleBlobie]
+func (b *SimpleBlobie) GetClassName() string {
+	return b.className
+}
+
+// SetDraw Sets options for drawing [SimpleBlobie]
+func (b *SimpleBlobie) SetDraw(drawOptions *DrawOptions) {
+	b.drawingOptions = drawOptions
 }
 
 // DrawTrack Draws blob's track [SimpleBlobie]
@@ -250,41 +224,4 @@ func (b *SimpleBlobie) DrawTrack(mat *gocv.Mat, optionalText string) {
 			gocv.PutText(mat, optionalText, pt, b.drawingOptions.TextColor.Font, b.drawingOptions.TextColor.Scale, b.drawingOptions.TextColor.Color, b.drawingOptions.TextColor.Thickness)
 		}
 	}
-}
-
-func min(x, y int) int {
-	if x < y {
-		return x
-	}
-	return y
-}
-
-func minf64(x, y float64) float64 {
-	if x < y {
-		return x
-	}
-	return y
-}
-
-func maxf64(x, y float64) float64 {
-	if x > y {
-		return x
-	}
-	return y
-}
-
-func distanceBetweenBlobies(b1 *SimpleBlobie, b2 *SimpleBlobie) float64 {
-	return distanceBetweenPointsPtr(&b1.Center, &b2.Center)
-}
-
-func distanceBetweenPointsPtr(p1 *image.Point, p2 *image.Point) float64 {
-	intX := math.Abs(float64(p1.X - p2.X))
-	intY := math.Abs(float64(p1.Y - p2.Y))
-	return math.Sqrt(math.Pow(intX, 2) + math.Pow(intY, 2))
-}
-
-func distanceBetweenPoints(p1 image.Point, p2 image.Point) float64 {
-	intX := math.Abs(float64(p1.X - p2.X))
-	intY := math.Abs(float64(p1.Y - p2.Y))
-	return math.Sqrt(math.Pow(intX, 2) + math.Pow(intY, 2))
 }
