@@ -66,6 +66,7 @@ func NewKalmanBlobie(rect image.Rectangle, options *BlobOptions) Blobie {
 		yMatrix:             mat.NewDense(2, 1, []float64{centerX, centerY}),
 		uMatrix:             mat.NewDense(4, 1, []float64{0.0, 0.0, 0.0, 0.0}),
 		crossedLine:         false,
+		customProperties:    make(map[string]interface{}),
 	}
 	kalmanBlobie.pointTracker.SetStateValue(centerX, centerY, 0, 0)
 	if options != nil {

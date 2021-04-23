@@ -51,6 +51,7 @@ func NewSimpleBlobie(rect image.Rectangle, options *BlobOptions) Blobie {
 		isStillBeingTracked: true,
 		noMatchTimes:        0,
 		crossedLine:         false,
+		customProperties:    make(map[string]interface{}),
 	}
 	if options != nil {
 		blobie.TrackTime = []time.Time{options.Time}
@@ -87,10 +88,10 @@ func NewBlobieDefaults(rect image.Rectangle) *SimpleBlobie {
 		isExists:            true,
 		isStillBeingTracked: true,
 		noMatchTimes:        0,
-
-		classID:     -1,
-		className:   "No class",
-		crossedLine: false,
+		classID:             -1,
+		className:           "No class",
+		customProperties:    make(map[string]interface{}),
+		crossedLine:         false,
 	}
 }
 
