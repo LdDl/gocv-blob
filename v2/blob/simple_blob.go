@@ -202,12 +202,12 @@ func (b *SimpleBlobie) GetClassName() string {
 	return b.className
 }
 
-func (b *SimpleBlobie) GetPropetry(key string) (interface{}, bool) {
+func (b *SimpleBlobie) GetProperty(key string) (interface{}, bool) {
 	v, ok := b.customProperties[key]
 	return v, ok
 }
 
-func (b *SimpleBlobie) SetPropetry(key string, value interface{}) {
+func (b *SimpleBlobie) SetProperty(key string, value interface{}) {
 	b.customProperties[key] = value
 }
 

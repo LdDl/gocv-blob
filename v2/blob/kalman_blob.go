@@ -214,12 +214,12 @@ func (b *KalmanBlobie) GetClassName() string {
 	return b.className
 }
 
-func (b *KalmanBlobie) GetPropetry(key string) (interface{}, bool) {
+func (b *KalmanBlobie) GetProperty(key string) (interface{}, bool) {
 	v, ok := b.customProperties[key]
 	return v, ok
 }
 
-func (b *KalmanBlobie) SetPropetry(key string, value interface{}) {
+func (b *KalmanBlobie) SetProperty(key string, value interface{}) {
 	b.customProperties[key] = value
 }
 
