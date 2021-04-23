@@ -27,7 +27,7 @@ type Blobie interface {
 	PredictNextPosition(n int)
 	Update(newb Blobie) error
 	SetDraw(drawOptions *DrawOptions)
-	DrawTrack(mat *gocv.Mat, optionalText string)
+	DrawTrack(mat *gocv.Mat, optionalText ...string)
 	IsCrossedTheLine(vertical, leftX, rightX int, direction bool) bool
 	IsCrossedTheLineWithShift(vertical, leftX, rightX int, direction bool, shift int) bool
 	IsCrossedTheObliqueLine(leftX, leftY, rightX, rightY int, direction bool) bool

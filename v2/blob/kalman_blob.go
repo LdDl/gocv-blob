@@ -219,7 +219,7 @@ func (b *KalmanBlobie) SetDraw(drawOptions *DrawOptions) {
 }
 
 // DrawTrack Draws blob's track [KalmanBlobie]
-func (b *KalmanBlobie) DrawTrack(mat *gocv.Mat, optionalText string) {
+func (b *KalmanBlobie) DrawTrack(mat *gocv.Mat, optionalText ...string) {
 	if b.drawingOptions == nil {
 		b.drawingOptions = NewDrawOptionsDefault()
 	}
@@ -228,12 +228,16 @@ func (b *KalmanBlobie) DrawTrack(mat *gocv.Mat, optionalText string) {
 		for i := range b.Track {
 			gocv.Circle(mat, b.Track[i], b.drawingOptions.CentroidColor.Radius, b.drawingOptions.CentroidColor.Color, b.drawingOptions.CentroidColor.Thickness)
 		}
-		if optionalText != "" {
-			pt := image.Pt(b.CurrentRect.Min.X, b.CurrentRect.Min.Y)
-			textSize := gocv.GetTextSize(optionalText, b.drawingOptions.TextColor.Font, b.drawingOptions.TextColor.Scale, b.drawingOptions.TextColor.Thickness)
-			textRect := image.Rectangle{Min: image.Point{X: pt.X, Y: pt.Y - textSize.Y}, Max: image.Point{X: pt.X + textSize.X, Y: pt.Y}}
-			gocv.Rectangle(mat, textRect, b.drawingOptions.BBoxColor.Color, b.drawingOptions.BBoxColor.Thickness)
-			gocv.PutText(mat, optionalText, pt, b.drawingOptions.TextColor.Font, b.drawingOptions.TextColor.Scale, b.drawingOptions.TextColor.Color, b.drawingOptions.TextColor.Thickness)
+		shiftTextY := 10
+		for i := len(optionalText) - 1; i >= 0; i-- {
+			text := optionalText[i]
+			if text != "" {
+				anchor := image.Pt(b.CurrentRect.Min.X, b.CurrentRect.Min.Y-i*shiftTextY)
+				textSize := gocv.GetTextSize(text, b.drawingOptions.TextColor.Font, b.drawingOptions.TextColor.Scale, b.drawingOptions.TextColor.Thickness)
+				textRect := image.Rectangle{Min: image.Point{X: anchor.X, Y: anchor.Y - textSize.Y}, Max: image.Point{X: anchor.X + textSize.X, Y: anchor.Y}}
+				gocv.Rectangle(mat, textRect, b.drawingOptions.BBoxColor.Color, b.drawingOptions.BBoxColor.Thickness)
+				gocv.PutText(mat, text, anchor, b.drawingOptions.TextColor.Font, b.drawingOptions.TextColor.Scale, b.drawingOptions.TextColor.Color, b.drawingOptions.TextColor.Thickness)
+			}
 		}
 	}
 }
