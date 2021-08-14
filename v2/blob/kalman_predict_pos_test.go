@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestSimplePredictPos(t *testing.T) {
+func TestKalmanPredictPos(t *testing.T) {
 	var (
 		testPoints = [][]int{
 			[]int{0, 0},
@@ -18,16 +18,27 @@ func TestSimplePredictPos(t *testing.T) {
 			[]int{16, 16},
 			[]int{20, 20},
 		}
-		correctPredictions = [][]int{
+		kalmanFilteredPoints = [][]int{
 			[]int{0, 0},
 			[]int{0, 0},
 			[]int{1, 1},
-			[]int{2, 2},
+			[]int{3, 3},
 			[]int{5, 5},
 			[]int{7, 7},
-			[]int{11, 11},
+			[]int{10, 10},
 			[]int{13, 13},
-			[]int{19, 19},
+			[]int{17, 17},
+		}
+		correctPredictions = [][]int{
+			[]int{0, 0},
+			[]int{0, 0},
+			[]int{0, 0},
+			[]int{1, 1},
+			[]int{4, 4},
+			[]int{6, 6},
+			[]int{8, 8},
+			[]int{12, 12},
+			[]int{15, 15},
 		}
 	)
 
@@ -51,19 +62,20 @@ func TestSimplePredictPos(t *testing.T) {
 	for i := range testPoints {
 		centerOne := testPoints[i]
 		rectOne := image.Rect(centerOne[0]-rectHalfWidth, centerOne[1]-rectHalfHeight, centerOne[0]+rectHalfWidth, centerOne[1]+rectHalfHeight)
-		blobOne := NewSimpleBlobie(rectOne, &commonOptions)
+		blobOne := NewKalmanBlobie(rectOne, &commonOptions)
 		if b == nil {
 			// Fill data on first iteration
 			b = blobOne
 		}
 		b.PredictNextPosition(maxNoMatch)
 		b.Update(blobOne)
-		forCheck := b.(*SimpleBlobie)
-		if forCheck.Center.X != centerOne[0] {
-			t.Errorf("Center.X on %d-th iteration should be %d, but got %d", i, centerOne[0], forCheck.Center.X)
+		forCheck := b.(*KalmanBlobie)
+		smoothedCenter := kalmanFilteredPoints[i]
+		if forCheck.Center.X != smoothedCenter[0] {
+			t.Errorf("Center.X on %d-th iteration should be %d, but got %d", i, smoothedCenter[0], forCheck.Center.X)
 		}
-		if forCheck.Center.Y != centerOne[1] {
-			t.Errorf("Center.Y on %d-th iteration should be %d, but got %d", i, centerOne[1], forCheck.Center.Y)
+		if forCheck.Center.Y != smoothedCenter[1] {
+			t.Errorf("Center.Y on %d-th iteration should be %d, but got %d", i, smoothedCenter[1], forCheck.Center.Y)
 		}
 		if forCheck.PredictedNextPosition.X != correctPredictions[i][0] {
 			t.Errorf("PredictedNextPosition.X on %d-th iteration should be %d, but got %d", i, correctPredictions[i][0], forCheck.PredictedNextPosition.X)
