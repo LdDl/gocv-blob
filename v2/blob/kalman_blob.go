@@ -89,21 +89,23 @@ func NewKalmanBlobie(rect image.Rectangle, options *BlobOptions) Blobie {
 
 // PredictNextPosition - Predict next N coordinates
 func (b *KalmanBlobie) PredictNextPosition(n int) {
-	account := min(n, len((*b).Track))
-	prev := len((*b).Track) - 1
-	current := prev - 1
-	var deltaX, deltaY, sum int = 0, 0, 0
+	account := min(n, len(b.Track))
+	current := len(b.Track) - 1
+	prev := current - 1
+	deltaX, deltaY, sum := 0, 0, 0
 	for i := 1; i < int(account); i++ {
-		deltaX += (((*b).Track)[current].X - ((*b).Track)[prev].X) * i
-		deltaY += (((*b).Track)[current].Y - ((*b).Track)[prev].Y) * i
+		deltaX += (b.Track[current].X - b.Track[prev].X) * (account - i)
+		deltaY += (b.Track[current].Y - b.Track[prev].Y) * (account - i)
 		sum += i
+		current = prev
+		prev = current - 1
 	}
 	if sum > 0 {
 		deltaX /= sum
 		deltaY /= sum
 	}
-	(*b).PredictedNextPosition.X = (*b).Track[len((*b).Track)-1].X + deltaX
-	(*b).PredictedNextPosition.Y = (*b).Track[len((*b).Track)-1].Y + deltaY
+	b.PredictedNextPosition.X = b.Track[len(b.Track)-1].X + deltaX
+	b.PredictedNextPosition.Y = b.Track[len(b.Track)-1].Y + deltaY
 }
 
 // Update - Update info about blob
