@@ -35,7 +35,7 @@ func getOrientation(Px, Py, Qx, Qy, Rx, Ry int) PointsOrientation {
 	if val > 0 {
 		return Clockwise
 	}
-	return CounterClockwise // Против часовой стрелки
+	return CounterClockwise // if it's neither collinear nor clockwise
 }
 
 // isIntersects Checks if segments intersect each other
@@ -241,7 +241,7 @@ func (b *KalmanBlobie) IsCrossedTheObliqueLine(leftX, leftY, rightX, rightY int,
 		// First segment is: P1 = (b.Track[prevFrame].X, b.Track[prevFrame].Y), Q1 = (b.Track[currFrame].X, b.Track[currFrame].Y)
 		// Second segment is: P2 = (leftX, leftY), Q2 = (rightX, rightY)
 		if isIntersects(b.Track[prevFrame].X, b.Track[prevFrame].Y, b.Track[currFrame].X, b.Track[currFrame].Y, leftX, leftY, rightX, rightY) {
-			
+
 			if direction {
 				if b.Track[currFrame].Y > b.Track[prevFrame].Y { // TO us
 					b.crossedLine = true
