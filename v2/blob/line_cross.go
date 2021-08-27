@@ -97,7 +97,6 @@ func (b *SimpleBlobie) IsCrossedTheLine(vertical, leftX, rightX int, direction b
 		currFrame := trackLen - 1
 		if b.Track[currFrame].X >= leftX && b.Track[currFrame].X <= rightX {
 			if direction {
-
 				if b.Track[prevFrame].Y <= vertical && b.Track[currFrame].Y > vertical { // TO us
 					b.crossedLine = true
 					return true
@@ -198,7 +197,6 @@ func (b *KalmanBlobie) IsCrossedTheLine(vertical, leftX, rightX int, direction b
 		currFrame := trackLen - 1
 		if b.Track[currFrame].X >= leftX && b.Track[currFrame].X <= rightX {
 			if direction {
-
 				if b.Track[prevFrame].Y <= vertical && b.Track[currFrame].Y > vertical { // TO us
 					b.crossedLine = true
 					return true
