@@ -15,6 +15,13 @@ func maxInt(x, y int) int {
 	return y
 }
 
+func minInt(x, y int) int {
+	if x < y {
+		return x
+	}
+	return y
+}
+
 // isOnSegment Checks if point Q lies on segment PR
 // Input: three colinear points Q, Q and R
 func isOnSegment(Px, Py, Qx, Qy, Rx, Ry int) bool {
