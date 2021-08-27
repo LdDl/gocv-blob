@@ -38,6 +38,7 @@ global_blobs = blob.NewBlobiesDefaults()
 // 2. Define new blob objects
 new_blob1 = blob.NewSimpleBlobie(image.Rectangle, how many points to store in track, class ID of object , class name of object)
 new_blob2 = blob.NewSimpleBlobie(image.Rectangle, how many points to store in track, class ID of object , class name of object)
+// You can use NewKalmanBlobie if needed
 
 // 3. Append data to temporary set of blobs
 tmp_blobs = []*blob.Blobie{new_blob1, new_blob2}
