@@ -25,7 +25,7 @@ func minInt(x, y int) int {
 // isOnSegment Checks if point Q lies on segment PR
 // Input: three colinear points Q, Q and R
 func isOnSegment(Px, Py, Qx, Qy, Rx, Ry int) bool {
-	if Qx <= maxInt(Px, Rx) && Qx >= maxInt(Px, Rx) && Qy <= maxInt(Py, Ry) && Qy >= maxInt(Py, Ry) {
+	if Qx <= maxInt(Px, Rx) && Qx >= minInt(Px, Rx) && Qy <= maxInt(Py, Ry) && Qy >= minInt(Py, Ry) {
 		return true
 	}
 	return false
